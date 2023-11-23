@@ -1,0 +1,54 @@
+version: "3"
+
+services:
+  # postgres:
+  #   container_name: postgis
+  #   image: postgis/postgis:latest
+  #   env_file: pg_env.txt
+  #   # ports:
+  #   #   - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+
+  # martin:
+  #   build:
+  #     context: ../martin
+  #     dockerfile: Dockerfile
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - DATABASE_URL=postgres://postgres:postgres@postgres:5432/inovasi
+  #     - RUST_LOG=actix_web=info,martin=debug,tokio_postgres=debug
+  #   depends_on:
+  #     - postgres
+
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   env_file: pg_env.txt
+  #   ports:
+  #     - "5051:80"
+  #   restart: always
+
+  web:
+    container_name: inovasiapp
+    env_file: .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+
+    networks:
+      - b3d
+# volumes:
+#   postgres_data:
+#     name: postgres_data
+
+networks:
+  b3d:
+    external:
+      name: b3d
