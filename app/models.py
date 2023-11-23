@@ -179,8 +179,10 @@ class Agriplot(models.Model):
         "Subsidiary"), verbose_name=_("Subsidiary"), null=True)
     Estate = models.CharField(max_length=255, help_text=_(
         "Estate"), verbose_name=_("Estate"), null=True)
-    ID_Estate = models.CharField(max_length=255, help_text=_(
-        "ID_Estate"), verbose_name=_("ID_Estate"), null=True)
+    # ID_Estate = models.CharField(max_length=255, help_text=_(
+    #     "ID_Estate"), verbose_name=_("ID_Estate"), null=True)
+    id_estate = models.CharField(max_length=255, help_text=_(
+        "id_estate"), verbose_name=_("id_estate"), null=True)
     AgriplotID = models.CharField(max_length=255, help_text=_(
         "AgriplotID"), verbose_name=_("AgriplotID"), null=True)
     TypeOfSupp = models.CharField(max_length=255, help_text=_(
