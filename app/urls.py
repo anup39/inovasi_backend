@@ -1,5 +1,5 @@
 from rest_framework import routers
-from .views import ExampleViewSet, FileUploadAPIView, FacilityViewSet, PieChartViewSet, MillViewSet, TableColumnViewSet, TTPViewSet
+from .views import ExampleViewSet, FileUploadAPIView, FacilityViewSet, PieChartViewSet, MillViewSet, TableColumnViewSet, TTPViewSet, AgriplotViewSet
 from django.urls import path, include
 
 
@@ -8,6 +8,7 @@ router = routers.DefaultRouter()
 router.register('facility', FacilityViewSet, basename='facility')
 router.register('mill', MillViewSet, basename='mill')
 router.register('ttp', TTPViewSet, basename='ttp')
+router.register('agriplot', AgriplotViewSet, basename='agriplot')
 
 
 urlpatterns = [

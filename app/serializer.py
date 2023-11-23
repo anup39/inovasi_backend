@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Facility, Mill, Tracetoplantation
+from .models import Facility, Mill, Agriplot, Tracetoplantation
 
 
 class FileUploadSerializer(serializers.Serializer):
@@ -21,6 +21,13 @@ class FacilitySerializer(serializers.ModelSerializer):
 class MillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Mill
+        exclude = ("geom", "created_at", "is_display",
+                   "is_deleted", "is_edited",)
+
+
+class AgriplotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Agriplot
         exclude = ("geom", "created_at", "is_display",
                    "is_deleted", "is_edited",)
 

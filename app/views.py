@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import viewsets
 from .models import Facility, Refinery, Mill, Agriplot, Tracetomill, Tracetoplantation, PlantedOutsideLandRegistration
 from .tasks import handleExampleTask
-from .serializer import FileUploadSerializer, ShapeFileUploadSerializer, FacilitySerializer, MillSerializer, TracetoplantationSerializer
+from .serializer import FileUploadSerializer, ShapeFileUploadSerializer, FacilitySerializer, MillSerializer, AgriplotSerializer, TracetoplantationSerializer
 from django.contrib.gis.geos import Point
 from rest_framework import generics, status
 from drf_yasg import openapi
@@ -458,6 +458,11 @@ class FacilityViewSet(viewsets.ModelViewSet):
 class MillViewSet(viewsets.ModelViewSet):
     queryset = Mill.objects.filter(is_display=True)
     serializer_class = MillSerializer
+
+
+class AgriplotViewSet(viewsets.ModelViewSet):
+    queryset = Agriplot.objects.all()[:100]
+    serializer_class = AgriplotSerializer
 
 
 class TTPViewSet(viewsets.ModelViewSet):
