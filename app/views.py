@@ -493,13 +493,14 @@ class TableColumnViewSet(APIView):
                 width = 250
                 data = [
                     {
-                        "field": "id",
-                        "headerName": "id",
+                        "field": "mill_eq_id",
+                        "headerName": "mill_eq_id",
                         "width": 100,
-                        "type": "number",
+                        "type": "string",
                         "editable": False,
 
                     },
+
                     {
                         "field": "mill_company_name",
                         "type": "string",
