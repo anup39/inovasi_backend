@@ -495,7 +495,7 @@ class TableColumnViewSet(APIView):
                     {
                         "field": "mill_eq_id",
                         "headerName": "mill_eq_id",
-                        "width": 100,
+                        "width": width,
                         "type": "string",
                         "editable": False,
 
