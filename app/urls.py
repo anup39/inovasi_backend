@@ -1,5 +1,5 @@
 from rest_framework import routers
-from .views import ExampleViewSet, FileUploadAPIView, FacilityViewSet, PieChartViewSet, MillViewSet, TableColumnViewSet, TTPViewSet, AgriplotViewSet
+from .views import ExampleViewSet, FileUploadAPIView, FacilityViewSet, PieChartViewSet, MillViewSet, TableColumnViewSet, TTPViewSet, AgriplotViewSet, AgriplotResultViewSet
 from django.urls import path, include
 
 
@@ -21,4 +21,6 @@ urlpatterns = [
          name='pie-chart'),
     path('table-column/<section>/', TableColumnViewSet.as_view(),
          name='table-column'),
+    path('agriplot-result/', AgriplotResultViewSet.as_view(),
+         name='agriplot-result'),
 ]

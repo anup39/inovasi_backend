@@ -490,6 +490,18 @@ class TTPViewSet(viewsets.ModelViewSet):
         return Response(distinct_values)
 
 
+class AgriplotResultViewSet(APIView):
+    def get(self, request, *args, **kwargs):
+        import json
+        estate_ids = request.GET.get('estateids')
+        agriplots = Agriplot.objects.filter(
+            id_estate__in=json.loads(estate_ids)
+        )
+        serializer = AgriplotSerializer(agriplots, many=True)
+
+        return Response(serializer.data)
+
+
 class TableColumnViewSet(APIView):
     def get(self, request, section, *args, **kwargs):
         if section:
