@@ -667,4 +667,139 @@ class TableColumnViewSet(APIView):
                     },
                 ]
                 return Response({"columns": data})
+            if section == "agriplot":
+                 data = [
+                    {
+                        "field": "id",
+                        "headerName": "id",
+                        "width": width,
+                        "type": "number",
+                        "editable": False,
+
+                    },
+
+                    {
+                        "field": "Ownership",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "Ownership",
+                    },
+
+                    {
+                        "field": "Subsidiary",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "Subsidiary",
+                    },
+                    {
+                        "field": "Estate",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "Estate",
+                    },
+                    {
+                        "field": "id_estate",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "ID_Estate",
+                    },
+                    {
+                        "field": "AgriplotID",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "AgriplotID",
+                    },
+                    {
+                        "field": "TypeOfSupp",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "TypeOfSupp",
+                    },
+                    {
+                        "field": "Village",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "Village",
+                    },
+                    {
+                        "field": "SubDistric",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "SubDistric",
+                    },
+                    {
+                        "field": "District",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "District",
+                    },
+                    {
+                        "field": "Province",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "Province",
+                    },
+                    {
+                        "field": "Country",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "Country",
+                    },
+                    {
+                        "field": "Planted_Ar",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "Planted_Ar",
+                    },
+                    {
+                        "field": "YearUpdate",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "YearUpdate",
+                    },
+                    {
+                        "field": "RiskAssess",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "RiskAssess",
+                    },
+                    {
+                        "field": "GHG_LUC",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "GHG_LUC",
+                    },
+                    {
+                        "field": "Status",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "Status",
+                    },
+                    {
+                        "field": "geom",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "geom",
+                    },
+                    
+                ]
+                width = 250
+                return Response({"columns": data})
         return Response({"columns": []})
