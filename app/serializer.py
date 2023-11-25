@@ -29,7 +29,7 @@ class AgriplotSerializer(serializers.ModelSerializer):
     class Meta:
         model = Agriplot
         exclude = ("geom", "created_at", "is_display",
-                   "is_deleted", "is_edited",)
+                   "is_deleted", "is_edited", "actual_supplier")
 
 
 class TracetoplantationSerializer(serializers.ModelSerializer):
