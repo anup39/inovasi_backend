@@ -668,7 +668,8 @@ class TableColumnViewSet(APIView):
                 ]
                 return Response({"columns": data})
             if section == "agriplot":
-                 data = [
+                width = 250
+                data = [
                     {
                         "field": "id",
                         "headerName": "id",
@@ -798,8 +799,7 @@ class TableColumnViewSet(APIView):
                         "editable": False,
                         "headerName": "geom",
                     },
-                    
+
                 ]
-                width = 250
                 return Response({"columns": data})
         return Response({"columns": []})
