@@ -13,7 +13,8 @@ BEGIN
 
     SELECT INTO mvt ST_AsMVT(tile, 'function_zxy_query_app_agriplot_by_estateids', 4096, 'geom') FROM (
         SELECT
-            ST_AsMVTGeom(ST_Transform(ST_CurveToLine(geom), 3857), ST_TileEnvelope(z, x, y), 4096, 64, true) AS geom, id_estate
+            ST_AsMVTGeom(ST_Transform(ST_CurveToLine(geom), 3857), ST_TileEnvelope(z, x, y), 4096, 64, true) AS geom ,id_estate
+            --  Subsidiary,  Estate ,AgriplotID ,TypeOfSupp ,Village ,SubDistric ,District ,Province ,Country , Planted_Ar , YearUpdate , RiskAssess ,GHG_LUC 
         FROM app_agriplot 
         WHERE id_estate = ANY(estateids)
     ) AS tile WHERE geom IS NOT NULL;
@@ -42,7 +43,8 @@ BEGIN
 
     SELECT INTO mvt ST_AsMVT(tile, 'function_zxy_query_app_agriplot_by_estateids_and_wkt', 4096, 'geom') FROM (
         SELECT
-            ST_AsMVTGeom(ST_Transform(ST_CurveToLine(geom), 3857), ST_TileEnvelope(z, x, y), 4096, 64, true) AS geom, id_estate
+            ST_AsMVTGeom(ST_Transform(ST_CurveToLine(geom), 3857), ST_TileEnvelope(z, x, y), 4096, 64, true) AS  geom ,id_estate 
+            -- Subsidiary,  Estate ,AgriplotID ,TypeOfSupp ,Village ,SubDistric ,District ,Province ,Country , Planted_Ar , YearUpdate , RiskAssess ,GHG_LUC 
         FROM app_agriplot 
         WHERE id_estate = ANY(estateids) AND ST_Intersects(geom, ST_Transform(ST_GeomFromText(query_params->>'geometry_wkt', 4326), 4326))
     ) AS tile WHERE geom IS NOT NULL;
