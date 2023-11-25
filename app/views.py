@@ -60,6 +60,7 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
                       recursive=True)[0]
     print(shape, 'shape')
     gdf = gpd.read_file(shape)
+    gdf.to_crs(epsg=4326)
     print(gdf.head(), 'gdf')
     gdf.fillna(0, inplace=True)
     total_bounds = gdf.total_bounds
@@ -68,6 +69,9 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
         dropped_geometry = row.drop(["geometry"])
         dropped_geometry_dict = dropped_geometry.to_dict()
         geom = GEOSGeometry(str(row["geometry"]))
+
+        # Convert the geometry to EPSG 4326 (WGS84)
+
         if geom.geom_type == "MultiPolygon":
             for polygon in geom:
                 # new_geom = Polygon(polygon.exterior)

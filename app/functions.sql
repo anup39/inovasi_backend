@@ -8,11 +8,12 @@ DECLARE
     estateids text;
 BEGIN
     estateids := trim((query_params::jsonb) ->> 'estateids');
+
     SELECT INTO mvt ST_AsMVT(tile, 'function_zxy_query_app_agriplot_by_estateids', 4096, 'geom') FROM (
         SELECT
             ST_AsMVTGeom(ST_Transform(ST_CurveToLine(geom), 3857), ST_TileEnvelope(z, x, y), 4096, 64, true) AS geom, id_estate
         FROM app_agriplot 
-        WHERE id_estate::text ='GEL13244'
+        WHERE id_estate::text = estateids
     ) AS tile WHERE geom IS NOT NULL;
 
     RETURN mvt;
@@ -21,4 +22,6 @@ $$
 LANGUAGE plpgsql
 STABLE
 PARALLEL SAFE;
-COMMENT ON FUNCTION function_zxy_query_app_agriplot_by_estateids IS 'Filters the Agriplot table by estateids and actual supplier';
+COMMENT ON FUNCTION function_zxy_query_app_agriplot_by_estateids IS 'Filters the Agriplot table by estateids and renders 2D geometries';
+
+
