@@ -28,7 +28,7 @@ class MillSerializer(serializers.ModelSerializer):
 class AgriplotSerializer(serializers.ModelSerializer):
     class Meta:
         model = Agriplot
-        exclude = ("geom", "created_at", "is_display",
+        exclude = ("created_at", "is_display",
                    "is_deleted", "is_edited", "actual_supplier")
 
 
