@@ -78,7 +78,7 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
                 model.objects.create(
                     # id_mill=row['ID_Mill'],
                     # mill_name=row['Mill_Name'],
-                    ownership=row['Ownership'],
+                    ownership_plot=row['Ownership'],
                     subsidiary=row['Subsidiary'],
                     estate=row['Estate'],
                     id_estate=row['ID_Estate'],
@@ -93,7 +93,7 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
                     year_update=row['YearUpdate'],
                     risk_assess=row['RiskAssess'],
                     ghg_luc=row['GHG_LUC'],
-                    status=row['Status'],
+                    status_plot=row['Status'],
                     geom=polygon,
                     actual_supplier=actual_supplier
                 )
@@ -101,7 +101,7 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
             model.objects.create(
                 # id_mill=row['ID_Mill'],
                 # mill_name=row['Mill_Name'],
-                ownership=row['Ownership'],
+                ownership_plot=row['Ownership'],
                 subsidiary=row['Subsidiary'],
                 estate=row['Estate'],
                 id_estate=row['ID_Estate'],
@@ -116,7 +116,7 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
                 year_update=row['YearUpdate'],
                 risk_assess=row['RiskAssess'],
                 ghg_luc=row['GHG_LUC'],
-                status=row['Status'],
+                status_plot=row['Status'],
                 geom=geom,
                 actual_supplier=actual_supplier
 
@@ -156,7 +156,7 @@ def handleShapefilePlantedOutsideLandRegistration(shapefile_obj, model):
                     id_negeri=row['ID_Negeri'],
                     country=row['Country'],
                     note=row['Note'],
-                    status=row['Status'],
+                    status_plot=row['Status'],
                     geom=polygon,
 
                 )
@@ -170,7 +170,7 @@ def handleShapefilePlantedOutsideLandRegistration(shapefile_obj, model):
                 id_negeri=row['ID_Negeri'],
                 country=row['Country'],
                 note=row['Note'],
-                status=row['Status'],
+                status_plot=row['Status'],
                 geom=geom,
 
             )
@@ -680,7 +680,7 @@ class TableColumnViewSet(APIView):
                     },
 
                     {
-                        "field": "ownership",
+                        "field": "ownership_plot",
                         "type": "string",
                         "width": width,
                         "editable": False,
@@ -786,7 +786,7 @@ class TableColumnViewSet(APIView):
                         "headerName": "GHG_LUC",
                     },
                     {
-                        "field": "status",
+                        "field": "status_plot",
                         "type": "string",
                         "width": width,
                         "editable": False,

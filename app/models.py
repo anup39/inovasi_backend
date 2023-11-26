@@ -173,7 +173,7 @@ class Agriplot(models.Model):
         "id_mill"), verbose_name=_("id_mill"), null=True)
     mill_name = models.CharField(max_length=255, help_text=_(
         "mill_name"), verbose_name=_("mill_name"), null=True)
-    ownership = models.CharField(max_length=255, help_text=_(
+    ownership_plot = models.CharField(max_length=255, help_text=_(
         "ownership"), verbose_name=_("ownership"), null=True)
     subsidiary = models.CharField(max_length=255, help_text=_(
         "subsidiary"), verbose_name=_("subsidiary"), null=True)
@@ -205,7 +205,7 @@ class Agriplot(models.Model):
         "risk_assess"), verbose_name=_("risk_assess"), null=True)
     ghg_luc = models.CharField(max_length=255, help_text=_(
         "ghg_luc"), verbose_name=_("ghg_luc"), null=True)
-    status = models.CharField(max_length=255, help_text=_(
+    status_plot = models.CharField(max_length=255, help_text=_(
         "status"), verbose_name=_("status"), null=True)
     created_at = models.DateTimeField(default=timezone.now, help_text=_(
         "Creation date"), verbose_name=_("Created at"))
@@ -309,7 +309,7 @@ class PlantedOutsideLandRegistration(models.Model):
         "country"), verbose_name=_("country"), null=True)
     note = models.CharField(max_length=255, help_text=_(
         "note"), verbose_name=_("note"), null=True)
-    status = models.CharField(max_length=255, help_text=_(
+    status_plot = models.CharField(max_length=255, help_text=_(
         "status"), verbose_name=_("status"), null=True)
     created_at = models.DateTimeField(default=timezone.now, help_text=_(
         "Creation date"), verbose_name=_("Created at"))
