@@ -169,44 +169,44 @@ class Mill(models.Model):
 
 class Agriplot(models.Model):
     id = models.AutoField(primary_key=True)
-    ID_Mill = models.CharField(max_length=255, help_text=_(
-        "ID_Mill"), verbose_name=_("ID_Mill"), null=True)
-    Mill_Name = models.CharField(max_length=255, help_text=_(
-        "Mill_Name"), verbose_name=_("Mill_Name"), null=True)
-    Ownership = models.CharField(max_length=255, help_text=_(
-        "Ownership"), verbose_name=_("Ownership"), null=True)
-    Subsidiary = models.CharField(max_length=255, help_text=_(
-        "Subsidiary"), verbose_name=_("Subsidiary"), null=True)
-    Estate = models.CharField(max_length=255, help_text=_(
-        "Estate"), verbose_name=_("Estate"), null=True)
+    id_mill = models.CharField(max_length=255, help_text=_(
+        "id_mill"), verbose_name=_("id_mill"), null=True)
+    mill_name = models.CharField(max_length=255, help_text=_(
+        "mill_name"), verbose_name=_("mill_name"), null=True)
+    ownership = models.CharField(max_length=255, help_text=_(
+        "ownership"), verbose_name=_("ownership"), null=True)
+    subsidiary = models.CharField(max_length=255, help_text=_(
+        "subsidiary"), verbose_name=_("subsidiary"), null=True)
+    estate = models.CharField(max_length=255, help_text=_(
+        "estate"), verbose_name=_("estate"), null=True)
     # ID_Estate = models.CharField(max_length=255, help_text=_(
     #     "ID_Estate"), verbose_name=_("ID_Estate"), null=True)
     id_estate = models.CharField(max_length=255, help_text=_(
         "id_estate"), verbose_name=_("id_estate"), null=True)
-    AgriplotID = models.CharField(max_length=255, help_text=_(
-        "AgriplotID"), verbose_name=_("AgriplotID"), null=True)
-    TypeOfSupp = models.CharField(max_length=255, help_text=_(
-        "TypeOfSupp"), verbose_name=_("TypeOfSupp"), null=True)
-    Village = models.CharField(max_length=255, help_text=_(
-        "Village"), verbose_name=_("Village"), null=True)
-    SubDistric = models.CharField(max_length=255, help_text=_(
-        "SubDistric"), verbose_name=_("SubDistric"), null=True)
-    District = models.CharField(max_length=255, help_text=_(
-        "District"), verbose_name=_("District"), null=True)
-    Province = models.CharField(max_length=255, help_text=_(
-        "Province"), verbose_name=_("Province"), null=True)
-    Country = models.CharField(max_length=255, help_text=_(
-        "Country"), verbose_name=_("Country"), null=True)
-    Planted_Ar = models.CharField(max_length=255, help_text=_(
-        "Planted_Ar"), verbose_name=_("Planted_Ar"), null=True)
-    YearUpdate = models.CharField(max_length=255, help_text=_(
-        "YearUpdate"), verbose_name=_("YearUpdate"), null=True)
-    RiskAssess = models.CharField(max_length=255, help_text=_(
-        "RiskAssess"), verbose_name=_("RiskAssess"), null=True)
-    GHG_LUC = models.CharField(max_length=255, help_text=_(
-        "GHG_LUC"), verbose_name=_("GHG_LUC"), null=True)
-    Status = models.CharField(max_length=255, help_text=_(
-        "Status"), verbose_name=_("Status"), null=True)
+    agriplot_id = models.CharField(max_length=255, help_text=_(
+        "agriplot_id"), verbose_name=_("agriplot_id"), null=True)
+    type_of_supplier = models.CharField(max_length=255, help_text=_(
+        "type_of_supplier"), verbose_name=_("type_of_supplier"), null=True)
+    village = models.CharField(max_length=255, help_text=_(
+        "village"), verbose_name=_("village"), null=True)
+    sub_district = models.CharField(max_length=255, help_text=_(
+        "sub_district"), verbose_name=_("sub_district"), null=True)
+    district = models.CharField(max_length=255, help_text=_(
+        "district"), verbose_name=_("district"), null=True)
+    province = models.CharField(max_length=255, help_text=_(
+        "province"), verbose_name=_("province"), null=True)
+    country = models.CharField(max_length=255, help_text=_(
+        "country"), verbose_name=_("country"), null=True)
+    planted_area = models.CharField(max_length=255, help_text=_(
+        "planted_area"), verbose_name=_("planted_area"), null=True)
+    year_update = models.CharField(max_length=255, help_text=_(
+        "year_update"), verbose_name=_("year_update"), null=True)
+    risk_assess = models.CharField(max_length=255, help_text=_(
+        "risk_assess"), verbose_name=_("risk_assess"), null=True)
+    ghg_luc = models.CharField(max_length=255, help_text=_(
+        "ghg_luc"), verbose_name=_("ghg_luc"), null=True)
+    status = models.CharField(max_length=255, help_text=_(
+        "status"), verbose_name=_("status"), null=True)
     created_at = models.DateTimeField(default=timezone.now, help_text=_(
         "Creation date"), verbose_name=_("Created at"))
     geom = models.PolygonField(srid=4326, blank=True, null=True, dim=3)
@@ -293,24 +293,24 @@ class Tracetoplantation(models.Model):
 
 class PlantedOutsideLandRegistration(models.Model):
     id = models.AutoField(primary_key=True)
-    Mukim = models.CharField(max_length=255, help_text=_(
-        "Mukim"), verbose_name=_("Mukim"), null=True)
-    ID_Mukim = models.CharField(max_length=255, help_text=_(
-        "ID_Mukim"), verbose_name=_("ID_Mukim"), null=True)
-    Daerah = models.CharField(max_length=255, help_text=_(
-        "Daerah"), verbose_name=_("Daerah"), null=True)
-    ID_Daerah = models.CharField(max_length=255, help_text=_(
-        "ID_Daerah"), verbose_name=_("ID_Daerah"), null=True)
-    Negeri = models.CharField(max_length=255, help_text=_(
-        "Negeri"), verbose_name=_("Negeri"), null=True)
-    ID_Negeri = models.CharField(max_length=255, help_text=_(
-        "ID_Negeri"), verbose_name=_("ID_Negeri"), null=True)
-    Country = models.CharField(max_length=255, help_text=_(
-        "Country"), verbose_name=_("Country"), null=True)
-    Note = models.CharField(max_length=255, help_text=_(
-        "Note"), verbose_name=_("Note"), null=True)
-    Status = models.CharField(max_length=255, help_text=_(
-        "Status"), verbose_name=_("Status"), null=True)
+    mukim = models.CharField(max_length=255, help_text=_(
+        "mukim"), verbose_name=_("mukim"), null=True)
+    id_mukim = models.CharField(max_length=255, help_text=_(
+        "id_mukim"), verbose_name=_("id_mukim"), null=True)
+    daerah = models.CharField(max_length=255, help_text=_(
+        "daerah"), verbose_name=_("daerah"), null=True)
+    id_daerah = models.CharField(max_length=255, help_text=_(
+        "id_daerah"), verbose_name=_("id_daerah"), null=True)
+    negeri = models.CharField(max_length=255, help_text=_(
+        "negeri"), verbose_name=_("negeri"), null=True)
+    id_negeri = models.CharField(max_length=255, help_text=_(
+        "id_negeri"), verbose_name=_("id_negeri"), null=True)
+    country = models.CharField(max_length=255, help_text=_(
+        "country"), verbose_name=_("country"), null=True)
+    note = models.CharField(max_length=255, help_text=_(
+        "note"), verbose_name=_("note"), null=True)
+    status = models.CharField(max_length=255, help_text=_(
+        "status"), verbose_name=_("status"), null=True)
     created_at = models.DateTimeField(default=timezone.now, help_text=_(
         "Creation date"), verbose_name=_("Created at"))
     geom = models.PolygonField(srid=4326, blank=True, null=True, dim=3)
