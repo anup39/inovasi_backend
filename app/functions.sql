@@ -67,7 +67,7 @@ DECLARE
     mvt bytea;
     millid text;
 BEGIN
-    millid := trim((query_params::jsonb ->> "millid"));
+    millid := trim((query_params::jsonb) ->> 'millid');
     SELECT INTO mvt ST_AsMVT(tile, 'function_zxy_query_app_mill_by_millid', 4096, 'geom') FROM (
         SELECT
             ST_AsMVTGeom(ST_Transform(ST_CurveToLine(geom), 3857), ST_TileEnvelope(z, x, y), 4096, 64, true) AS geom ,id,
@@ -76,7 +76,7 @@ BEGIN
             mill_legal_conservation_area , mill_legal_landuse_risk , mill_complex_supplybase_risk , mill_date_update
             
         FROM app_mill 
-        WHERE id::text = millid
+        WHERE mill_eq_id::text=millid
     ) AS tile WHERE geom IS NOT NULL;
 
     RETURN mvt;
