@@ -465,8 +465,9 @@ class MillViewSet(viewsets.ModelViewSet):
 
 
 class AgriplotViewSet(viewsets.ModelViewSet):
-    queryset = Agriplot.objects.all()[:100]
+    queryset = Agriplot.objects.filter(is_display=True)
     serializer_class = AgriplotSerializer
+    filter_backends = [DjangoFilterBackend,]
 
 
 class TTPViewSet(viewsets.ModelViewSet):
