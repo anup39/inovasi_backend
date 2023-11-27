@@ -453,6 +453,83 @@ class PieChartViewSet(generics.CreateAPIView):
 
             return Response(data)
 
+        if section == "mill" and distinct == "mill_deforestation_risk":
+            from django.db.models import Count, F
+            # Get distinct counts
+            data = (
+                Mill.objects.values(display=F('mill_deforestation_risk'))
+                .annotate(count=Count('mill_deforestation_risk'))
+                .order_by('mill_deforestation_risk')
+            )
+
+            return Response(data)
+
+        if section == "mill" and distinct == "mill_legal_prf_risk":
+            from django.db.models import Count, F
+            # Get distinct counts
+            data = (
+                Mill.objects.values(display=F('mill_legal_prf_risk'))
+                .annotate(count=Count('mill_legal_prf_risk'))
+                .order_by('mill_legal_prf_risk')
+            )
+
+            return Response(data)
+
+        if section == "mill" and distinct == "mill_legal_landuse_risk":
+            from django.db.models import Count, F
+            # Get distinct counts
+            data = (
+                Mill.objects.values(display=F('mill_legal_landuse_risk'))
+                .annotate(count=Count('mill_legal_landuse_risk'))
+                .order_by('mill_legal_landuse_risk')
+            )
+
+            return Response(data)
+
+        if section == "mill" and distinct == "mill_complex_supplybase_risk":
+            from django.db.models import Count, F
+            # Get distinct counts
+            data = (
+                Mill.objects.values(display=F('mill_complex_supplybase_risk'))
+                .annotate(count=Count('mill_complex_supplybase_risk'))
+                .order_by('mill_complex_supplybase_risk')
+            )
+
+            return Response(data)
+
+        if section == "agriplot" and distinct == "country":
+            from django.db.models import Count, F
+            # Get distinct counts
+            data = (
+                Agriplot.objects.values(display=F('country'))
+                .annotate(count=Count('country'))
+                .order_by('country')
+            )
+
+            return Response(data)
+
+        if section == "agriplot" and distinct == "type_of_supplier":
+            from django.db.models import Count, F
+            # Get distinct counts
+            data = (
+                Agriplot.objects.values(display=F('type_of_supplier'))
+                .annotate(count=Count('type_of_supplier'))
+                .order_by('type_of_supplier')
+            )
+
+            return Response(data)
+
+        if section == "agriplot" and distinct == "risk_assess":
+            from django.db.models import Count, F
+            # Get distinct counts
+            data = (
+                Agriplot.objects.values(display=F('risk_assess'))
+                .annotate(count=Count('risk_assess'))
+                .order_by('risk_assess')
+            )
+
+            return Response(data)
+
 
 class FacilityViewSet(viewsets.ModelViewSet):
     queryset = Facility.objects.filter(is_display=True)
