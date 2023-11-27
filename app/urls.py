@@ -1,5 +1,5 @@
 from rest_framework import routers
-from .views import ExampleViewSet, FileUploadAPIView, FacilityViewSet, PieChartViewSet, MillViewSet, TableColumnViewSet, TTPViewSet, AgriplotViewSet, AgriplotResultViewSet, AgriplotResultWKTViewSet
+from .views import CustomAuthToken, ExampleViewSet, FileUploadAPIView, FacilityViewSet, PieChartViewSet, MillViewSet, TableColumnViewSet, TTPViewSet, AgriplotViewSet, AgriplotResultViewSet, AgriplotResultWKTViewSet
 from django.urls import path, include
 
 
@@ -13,6 +13,7 @@ router.register('agriplot', AgriplotViewSet, basename='agriplot')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('api-token-auth/', CustomAuthToken.as_view()),
     path('app/example', ExampleViewSet.as_view({'get': 'list'}),
          name='example-api'),
     path('upload-facility/', FileUploadAPIView.as_view(),
