@@ -324,4 +324,4 @@ class PlantedOutsideLandRegistration(models.Model):
         verbose_name_plural = _("PlantedOutsideLandRegistrations")
 
     def __str__(self):
-        return str(self.Mukim)
+        return str(self.mukim)
