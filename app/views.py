@@ -797,3 +797,20 @@ class TableColumnViewSet(APIView):
                 ]
                 return Response({"columns": data})
         return Response({"columns": []})
+
+
+class AgriplotResultWKTViewSet(APIView):
+    def get(self, request, *args, **kwargs):
+        import json
+        estate_ids = request.GET.get('estateids')
+        geometry_wkt = request.GET.get('geometry_wkt')
+        agriplots = Agriplot.objects.filter(
+            id_estate__in=json.loads(estate_ids)
+        )
+        if geometry_wkt:
+            geom = GEOSGeometry(geometry_wkt)
+            agriplots = agriplots.filter(geom__intersects=geom)
+
+        serializer = AgriplotSerializer(agriplots, many=True)
+
+        return Response(serializer.data)
