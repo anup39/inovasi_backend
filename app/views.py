@@ -10,6 +10,7 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 import pandas as pd
 import zipfile
+import os
 import glob
 from django.core.exceptions import ValidationError
 import geopandas as gpd
@@ -21,6 +22,24 @@ from django.db.models import Count
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 # Create your views here.
+
+
+def create_shapefiles_folder():
+    folder_path = 'Shapefiles'
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+        print(f"Folder '{folder_path}' created successfully.")
+    else:
+        print(f"Folder '{folder_path}' already exists.")
+
+
+def get_zip_file_name(zip_file_path):
+    file_name, file_extension = os.path.splitext(zip_file_path)
+
+    if file_extension.lower() == '.zip':
+        return file_name
+    else:
+        return None
 
 
 def checkUploadFileValidationGlobal(shape_file):
@@ -56,9 +75,12 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
         actual_supplier = True
     else:
         actual_supplier = False
+    create_shapefiles_folder()
+    zip_file_name = get_zip_file_name(str(shape_file))
+    print(zip_file_name, "zip file name")
     with zipfile.ZipFile(shape_file, "r") as zip_ref:
-        zip_ref.extractall(str(shape_file))
-    shape = glob.glob(r'{}/**/*.shp'.format(str(shape_file)),
+        zip_ref.extractall('Shapefiles')
+    shape = glob.glob(r'{}/**/*.shp'.format(f'Shapefiles/{zip_file_name}'),
                       recursive=True)[0]
     print(shape, 'shape')
     gdf = gpd.read_file(shape)
@@ -126,6 +148,8 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
             pass
 
     return bound_dict
+
+    # return True
 
 
 def handleShapefilePlantedOutsideLandRegistration(shapefile_obj, model):
