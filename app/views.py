@@ -10,6 +10,7 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 import pandas as pd
 import zipfile
+import os
 import glob
 from django.core.exceptions import ValidationError
 import geopandas as gpd
@@ -21,6 +22,15 @@ from django.db.models import Count
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 # Create your views here.
+
+
+def create_shapefiles_folder():
+    folder_path = 'Shapefiles'
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+        print(f"Folder '{folder_path}' created successfully.")
+    else:
+        print(f"Folder '{folder_path}' already exists.")
 
 
 def checkUploadFileValidationGlobal(shape_file):
@@ -56,76 +66,79 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
         actual_supplier = True
     else:
         actual_supplier = False
-    with zipfile.ZipFile(shape_file, "r") as zip_ref:
-        zip_ref.extractall(str(shape_file))
-    shape = glob.glob(r'{}/**/*.shp'.format(str(shape_file)),
-                      recursive=True)[0]
-    print(shape, 'shape')
-    gdf = gpd.read_file(shape)
-    gdf.to_crs(epsg=4326)
-    print(gdf.head(), 'gdf')
-    gdf.fillna(0, inplace=True)
-    total_bounds = gdf.total_bounds
-    bound_dict = {"total_bounds": total_bounds.tolist()}
-    for index, row in gdf.iterrows():
-        dropped_geometry = row.drop(["geometry"])
-        dropped_geometry_dict = dropped_geometry.to_dict()
-        geom = GEOSGeometry(str(row["geometry"]))
+    create_shapefiles_folder()
+    # with zipfile.ZipFile(shape_file, "r") as zip_ref:
+    #     zip_ref.extractall(str(shape_file))
+    # shape = glob.glob(r'{}/**/*.shp'.format(str(shape_file)),
+    #                   recursive=True)[0]
+    # print(shape, 'shape')
+    # gdf = gpd.read_file(shape)
+    # gdf.to_crs(epsg=4326)
+    # print(gdf.head(), 'gdf')
+    # gdf.fillna(0, inplace=True)
+    # total_bounds = gdf.total_bounds
+    # bound_dict = {"total_bounds": total_bounds.tolist()}
+    # for index, row in gdf.iterrows():
+    #     dropped_geometry = row.drop(["geometry"])
+    #     dropped_geometry_dict = dropped_geometry.to_dict()
+    #     geom = GEOSGeometry(str(row["geometry"]))
 
-        # Convert the geometry to EPSG 4326 (WGS84)
+    #     # Convert the geometry to EPSG 4326 (WGS84)
 
-        if geom.geom_type == "MultiPolygon":
-            for polygon in geom:
-                # new_geom = Polygon(polygon.exterior)
-                model.objects.create(
-                    # id_mill=row['ID_Mill'],
-                    # mill_name=row['Mill_Name'],
-                    ownership_plot=row['Ownership'],
-                    subsidiary=row['Subsidiary'],
-                    estate=row['Estate'],
-                    id_estate=row['ID_Estate'],
-                    agriplot_id=row['AgriplotID'],
-                    type_of_supplier=row['TypeOfSupp'],
-                    village=row['Village'],
-                    sub_district=row['SubDistric'],
-                    district=row['District'],
-                    province=row['Province'],
-                    country=row['Country'],
-                    planted_area=row['Planted_Ar'],
-                    year_update=row['YearUpdate'],
-                    risk_assess=row['RiskAssess'],
-                    ghg_luc=row['GHG_LUC'],
-                    status_plot=row['Status'],
-                    geom=polygon,
-                    actual_supplier=actual_supplier
-                )
-        else:
-            model.objects.create(
-                # id_mill=row['ID_Mill'],
-                # mill_name=row['Mill_Name'],
-                ownership_plot=row['Ownership'],
-                subsidiary=row['Subsidiary'],
-                estate=row['Estate'],
-                id_estate=row['ID_Estate'],
-                agriplot_id=row['AgriplotID'],
-                type_of_supplier=row['TypeOfSupp'],
-                village=row['Village'],
-                sub_district=row['SubDistric'],
-                district=row['District'],
-                province=row['Province'],
-                country=row['Country'],
-                planted_area=row['Planted_Ar'],
-                year_update=row['YearUpdate'],
-                risk_assess=row['RiskAssess'],
-                ghg_luc=row['GHG_LUC'],
-                status_plot=row['Status'],
-                geom=geom,
-                actual_supplier=actual_supplier
+    #     if geom.geom_type == "MultiPolygon":
+    #         for polygon in geom:
+    #             # new_geom = Polygon(polygon.exterior)
+    #             model.objects.create(
+    #                 # id_mill=row['ID_Mill'],
+    #                 # mill_name=row['Mill_Name'],
+    #                 ownership_plot=row['Ownership'],
+    #                 subsidiary=row['Subsidiary'],
+    #                 estate=row['Estate'],
+    #                 id_estate=row['ID_Estate'],
+    #                 agriplot_id=row['AgriplotID'],
+    #                 type_of_supplier=row['TypeOfSupp'],
+    #                 village=row['Village'],
+    #                 sub_district=row['SubDistric'],
+    #                 district=row['District'],
+    #                 province=row['Province'],
+    #                 country=row['Country'],
+    #                 planted_area=row['Planted_Ar'],
+    #                 year_update=row['YearUpdate'],
+    #                 risk_assess=row['RiskAssess'],
+    #                 ghg_luc=row['GHG_LUC'],
+    #                 status_plot=row['Status'],
+    #                 geom=polygon,
+    #                 actual_supplier=actual_supplier
+    #             )
+    #     else:
+    #         model.objects.create(
+    #             # id_mill=row['ID_Mill'],
+    #             # mill_name=row['Mill_Name'],
+    #             ownership_plot=row['Ownership'],
+    #             subsidiary=row['Subsidiary'],
+    #             estate=row['Estate'],
+    #             id_estate=row['ID_Estate'],
+    #             agriplot_id=row['AgriplotID'],
+    #             type_of_supplier=row['TypeOfSupp'],
+    #             village=row['Village'],
+    #             sub_district=row['SubDistric'],
+    #             district=row['District'],
+    #             province=row['Province'],
+    #             country=row['Country'],
+    #             planted_area=row['Planted_Ar'],
+    #             year_update=row['YearUpdate'],
+    #             risk_assess=row['RiskAssess'],
+    #             ghg_luc=row['GHG_LUC'],
+    #             status_plot=row['Status'],
+    #             geom=geom,
+    #             actual_supplier=actual_supplier
 
-            )
-            pass
+    #         )
+    #         pass
 
-    return bound_dict
+    # return bound_dict
+
+    return True
 
 
 def handleShapefilePlantedOutsideLandRegistration(shapefile_obj, model):
