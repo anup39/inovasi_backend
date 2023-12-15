@@ -741,7 +741,14 @@ class TableColumnViewSet(APIView):
                         "editable": False,
 
                     },
+                    {
+                        "field": "mill_name",
+                        "headerName": "mill_name",
+                        "width": width,
+                        "type": "string",
+                        "editable": False,
 
+                    },
                     {
                         "field": "mill_company_name",
                         "type": "string",
