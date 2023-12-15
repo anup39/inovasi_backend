@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import viewsets
-from .models import Facility, Refinery, Mill, Agriplot, Tracetomill, Tracetoplantation, PlantedOutsideLandRegistration
+from .models import Facility, Refinery, Mill, Agriplot, Tracetomill, Tracetoplantation
 from .tasks import handleExampleTask
 from .serializer import FileUploadSerializer, ShapeFileUploadSerializer, FacilitySerializer, MillSerializer, AgriplotSerializer, TracetoplantationSerializer
 from django.contrib.gis.geos import Point
@@ -103,7 +103,7 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
                     # id_mill=row['ID_Mill'],
                     # mill_name=row['Mill_Name'],
                     ownership_plot=row['Ownership'],
-                    mill_eq_id=row['mill_eq_id'],
+                    millideq=row['mill_eq_id'],
                     subsidiary=row['Subsidiary'],
                     estate=row['Estate'],
                     id_estate=row['ID_Estate'],
@@ -115,10 +115,10 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
                     province=row['Province'],
                     country=row['Country'],
                     planted_area=row['Planted_Ar'],
-                    year_update=row['YearUpdate'],
+                    # year_update=row['YearUpdate'],
                     risk_assess=row['RiskAssess'],
                     ghg_luc=row['GHG_LUC'],
-                    status_plot=row['Status'],
+                    status_of_plot=row['Status'],
                     geom=polygon,
                     actual_supplier=actual_supplier
                 )
@@ -127,7 +127,7 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
                 # id_mill=row['ID_Mill'],
                 # mill_name=row['Mill_Name'],
                 ownership_plot=row['Ownership'],
-                mill_eq_id=row['mill_eq_id'],
+                millideq=row['mill_eq_id'],
                 subsidiary=row['Subsidiary'],
                 estate=row['Estate'],
                 id_estate=row['ID_Estate'],
@@ -139,10 +139,10 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
                 province=row['Province'],
                 country=row['Country'],
                 planted_area=row['Planted_Ar'],
-                year_update=row['YearUpdate'],
+                # year_update=row['YearUpdate'],
                 risk_assess=row['RiskAssess'],
                 ghg_luc=row['GHG_LUC'],
-                status_plot=row['Status'],
+                status_of_plot=row['Status'],
                 geom=geom,
                 actual_supplier=actual_supplier
 
