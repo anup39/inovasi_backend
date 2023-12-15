@@ -404,6 +404,13 @@ class PieChartViewSet(generics.CreateAPIView):
                 .order_by('facilities_country')
             )
 
+            total = Facility.objects.all().count()
+            for item in data :
+                print(item,'item')
+                item['total']= total
+                item [ 'percentage'] = (item.get('count') / total )*100
+
+            
             return Response(data)
 
         if section == "facility" and distinct == "type":
@@ -414,6 +421,13 @@ class PieChartViewSet(generics.CreateAPIView):
                 .annotate(count=Count('facilities_type'))
                 .order_by('facilities_type')
             )
+
+            total = Facility.objects.all().count()
+            for item in data :
+                print(item,'item')
+                item['total']= total
+                item [ 'percentage'] = (item.get('count') / total )*100
+
 
             return Response(data)
 
@@ -426,6 +440,13 @@ class PieChartViewSet(generics.CreateAPIView):
                 .order_by('facilites_rspo')
             )
 
+            total = Facility.objects.all().count()
+            for item in data :
+                print(item,'item')
+                item['total']= total
+                item [ 'percentage'] = (item.get('count') / total )*100
+
+
             return Response(data)
 
         if section == "refinery" and distinct == "country":
@@ -436,6 +457,13 @@ class PieChartViewSet(generics.CreateAPIView):
                 .annotate(count=Count('refinery_country'))
                 .order_by('refinery_country')
             )
+
+            total = Refinery.objects.all().count()
+            for item in data :
+                print(item,'item')
+                item['total']= total
+                item [ 'percentage'] = (item.get('count') / total )*100
+
 
             return Response(data)
 
@@ -448,6 +476,12 @@ class PieChartViewSet(generics.CreateAPIView):
                 .order_by('refinery_type')
             )
 
+            total = Refinery.objects.all().count()
+            for item in data :
+                print(item,'item')
+                item['total']= total
+                item [ 'percentage'] = (item.get('count') / total )*100
+
             return Response(data)
 
         if section == "refinery" and distinct == "rspo":
@@ -458,7 +492,11 @@ class PieChartViewSet(generics.CreateAPIView):
                 .annotate(count=Count('refinery_rspo'))
                 .order_by('refinery_rspo')
             )
-
+            total = Refinery.objects.all().count()
+            for item in data :
+                print(item,'item')
+                item['total']= total
+                item [ 'percentage'] = (item.get('count') / total )*100
             return Response(data)
 
         if section == "mill" and distinct == "country":
@@ -469,6 +507,12 @@ class PieChartViewSet(generics.CreateAPIView):
                 .annotate(count=Count('mill_country'))
                 .order_by('mill_country')
             )
+
+            total = Mill.objects.all().count()
+            for item in data :
+                print(item,'item')
+                item['total']= total
+                item [ 'percentage'] = (item.get('count') / total )*100
 
             return Response(data)
 
@@ -481,6 +525,12 @@ class PieChartViewSet(generics.CreateAPIView):
                 .order_by('mill_type')
             )
 
+            total = Mill.objects.all().count()
+            for item in data :
+                print(item,'item')
+                item['total']= total
+                item [ 'percentage'] = (item.get('count') / total )*100
+
             return Response(data)
 
         if section == "mill" and distinct == "rspo":
@@ -491,6 +541,12 @@ class PieChartViewSet(generics.CreateAPIView):
                 .annotate(count=Count('mill_rspo'))
                 .order_by('mill_rspo')
             )
+
+            total = Mill.objects.all().count()
+            for item in data :
+                print(item,'item')
+                item['total']= total
+                item [ 'percentage'] = (item.get('count') / total )*100
 
             return Response(data)
 
@@ -503,6 +559,12 @@ class PieChartViewSet(generics.CreateAPIView):
                 .order_by('mill_deforestation_risk')
             )
 
+            total = Mill.objects.all().count()
+            for item in data :
+                print(item,'item')
+                item['total']= total
+                item [ 'percentage'] = (item.get('count') / total )*100
+
             return Response(data)
 
         if section == "mill" and distinct == "mill_legal_prf_risk":
@@ -513,6 +575,13 @@ class PieChartViewSet(generics.CreateAPIView):
                 .annotate(count=Count('mill_legal_prf_risk'))
                 .order_by('mill_legal_prf_risk')
             )
+
+            total = Mill.objects.all().count()
+            for item in data :
+                print(item,'item')
+                item['total']= total
+                item [ 'percentage'] = (item.get('count') / total )*100
+
 
             return Response(data)
 
@@ -525,6 +594,13 @@ class PieChartViewSet(generics.CreateAPIView):
                 .order_by('mill_legal_landuse_risk')
             )
 
+            total = Mill.objects.all().count()
+            for item in data :
+                print(item,'item')
+                item['total']= total
+                item [ 'percentage'] = (item.get('count') / total )*100
+
+
             return Response(data)
 
         if section == "mill" and distinct == "mill_complex_supplybase_risk":
@@ -535,6 +611,13 @@ class PieChartViewSet(generics.CreateAPIView):
                 .annotate(count=Count('mill_complex_supplybase_risk'))
                 .order_by('mill_complex_supplybase_risk')
             )
+
+            total = Mill.objects.all().count()
+            for item in data :
+                print(item,'item')
+                item['total']= total
+                item [ 'percentage'] = (item.get('count') / total )*100
+
 
             return Response(data)
 
@@ -547,16 +630,30 @@ class PieChartViewSet(generics.CreateAPIView):
                 .order_by('country')
             )
 
+            total = Agriplot.objects.all().count()
+            for item in data :
+                print(item,'item')
+                item['total']= total
+                item [ 'percentage'] = (item.get('count') / total )*100
+
+
             return Response(data)
 
         if section == "agriplot" and distinct == "type_of_supplier":
             from django.db.models import Count, F
             # Get distinct counts
+
             data = (
                 Agriplot.objects.values(display=F('type_of_supplier'))
                 .annotate(count=Count('type_of_supplier'))
                 .order_by('type_of_supplier')
             )
+
+            total = Agriplot.objects.all().count()
+            for item in data :
+                print(item,'item')
+                item['total']= total
+                item [ 'percentage'] = (item.get('count') / total )*100
 
             return Response(data)
 
@@ -568,6 +665,13 @@ class PieChartViewSet(generics.CreateAPIView):
                 .annotate(count=Count('risk_assess'))
                 .order_by('risk_assess')
             )
+
+            total = Agriplot.objects.all().count()
+            for item in data :
+                print(item,'item')
+                item['total']= total
+                item [ 'percentage'] = (item.get('count') / total )*100
+
 
             return Response(data)
 
