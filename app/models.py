@@ -173,6 +173,8 @@ class Agriplot(models.Model):
         "id_mill"), verbose_name=_("id_mill"), null=True)
     mill_name = models.CharField(max_length=255, help_text=_(
         "mill_name"), verbose_name=_("mill_name"), null=True)
+    mill_eq_id = models.CharField(max_length=255, help_text=_(
+        "mill_eq_id"), verbose_name=_("mill_eq_id"), null=True)
     ownership_plot = models.CharField(max_length=255, help_text=_(
         "ownership"), verbose_name=_("ownership"), null=True)
     subsidiary = models.CharField(max_length=255, help_text=_(
