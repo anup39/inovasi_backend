@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import viewsets
 from .models import Facility, Refinery, Mill, Agriplot, Tracetomill, Tracetoplantation
 from .tasks import handleExampleTask
-from .serializer import FileUploadSerializer, ShapeFileUploadSerializer, FacilitySerializer, MillSerializer, AgriplotSerializer, TracetoplantationSerializer
+from .serializer import FileUploadSerializer, ShapeFileUploadSerializer, FacilitySerializer, MillSerializer, AgriplotSerializer, TracetoplantationSerializer, AgriplotGeojsonSerializer
 from django.contrib.gis.geos import Point
 from rest_framework import generics, status
 from drf_yasg import openapi
@@ -407,12 +407,11 @@ class PieChartViewSet(generics.CreateAPIView):
             )
 
             total = Facility.objects.all().count()
-            for item in data :
-                print(item,'item')
-                item['total']= total
-                item [ 'percentage'] = (item.get('count') / total )*100
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
-            
             return Response(data)
 
         if section == "facility" and distinct == "type":
@@ -425,11 +424,10 @@ class PieChartViewSet(generics.CreateAPIView):
             )
 
             total = Facility.objects.all().count()
-            for item in data :
-                print(item,'item')
-                item['total']= total
-                item [ 'percentage'] = (item.get('count') / total )*100
-
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
@@ -443,11 +441,10 @@ class PieChartViewSet(generics.CreateAPIView):
             )
 
             total = Facility.objects.all().count()
-            for item in data :
-                print(item,'item')
-                item['total']= total
-                item [ 'percentage'] = (item.get('count') / total )*100
-
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
@@ -461,11 +458,10 @@ class PieChartViewSet(generics.CreateAPIView):
             )
 
             total = Refinery.objects.all().count()
-            for item in data :
-                print(item,'item')
-                item['total']= total
-                item [ 'percentage'] = (item.get('count') / total )*100
-
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
@@ -479,10 +475,10 @@ class PieChartViewSet(generics.CreateAPIView):
             )
 
             total = Refinery.objects.all().count()
-            for item in data :
-                print(item,'item')
-                item['total']= total
-                item [ 'percentage'] = (item.get('count') / total )*100
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
@@ -495,10 +491,10 @@ class PieChartViewSet(generics.CreateAPIView):
                 .order_by('refinery_rspo')
             )
             total = Refinery.objects.all().count()
-            for item in data :
-                print(item,'item')
-                item['total']= total
-                item [ 'percentage'] = (item.get('count') / total )*100
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
             return Response(data)
 
         if section == "mill" and distinct == "country":
@@ -511,10 +507,10 @@ class PieChartViewSet(generics.CreateAPIView):
             )
 
             total = Mill.objects.all().count()
-            for item in data :
-                print(item,'item')
-                item['total']= total
-                item [ 'percentage'] = (item.get('count') / total )*100
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
@@ -528,10 +524,10 @@ class PieChartViewSet(generics.CreateAPIView):
             )
 
             total = Mill.objects.all().count()
-            for item in data :
-                print(item,'item')
-                item['total']= total
-                item [ 'percentage'] = (item.get('count') / total )*100
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
@@ -545,10 +541,10 @@ class PieChartViewSet(generics.CreateAPIView):
             )
 
             total = Mill.objects.all().count()
-            for item in data :
-                print(item,'item')
-                item['total']= total
-                item [ 'percentage'] = (item.get('count') / total )*100
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
@@ -562,10 +558,10 @@ class PieChartViewSet(generics.CreateAPIView):
             )
 
             total = Mill.objects.all().count()
-            for item in data :
-                print(item,'item')
-                item['total']= total
-                item [ 'percentage'] = (item.get('count') / total )*100
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
@@ -579,11 +575,10 @@ class PieChartViewSet(generics.CreateAPIView):
             )
 
             total = Mill.objects.all().count()
-            for item in data :
-                print(item,'item')
-                item['total']= total
-                item [ 'percentage'] = (item.get('count') / total )*100
-
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
@@ -597,11 +592,10 @@ class PieChartViewSet(generics.CreateAPIView):
             )
 
             total = Mill.objects.all().count()
-            for item in data :
-                print(item,'item')
-                item['total']= total
-                item [ 'percentage'] = (item.get('count') / total )*100
-
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
@@ -615,11 +609,10 @@ class PieChartViewSet(generics.CreateAPIView):
             )
 
             total = Mill.objects.all().count()
-            for item in data :
-                print(item,'item')
-                item['total']= total
-                item [ 'percentage'] = (item.get('count') / total )*100
-
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
@@ -633,11 +626,10 @@ class PieChartViewSet(generics.CreateAPIView):
             )
 
             total = Agriplot.objects.all().count()
-            for item in data :
-                print(item,'item')
-                item['total']= total
-                item [ 'percentage'] = (item.get('count') / total )*100
-
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
@@ -652,10 +644,10 @@ class PieChartViewSet(generics.CreateAPIView):
             )
 
             total = Agriplot.objects.all().count()
-            for item in data :
-                print(item,'item')
-                item['total']= total
-                item [ 'percentage'] = (item.get('count') / total )*100
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
@@ -669,11 +661,10 @@ class PieChartViewSet(generics.CreateAPIView):
             )
 
             total = Agriplot.objects.all().count()
-            for item in data :
-                print(item,'item')
-                item['total']= total
-                item [ 'percentage'] = (item.get('count') / total )*100
-
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
@@ -1045,3 +1036,20 @@ class AgriplotResultWKTViewSet(APIView):
         serializer = AgriplotSerializer(agriplots, many=True)
 
         return Response(serializer.data)
+
+
+# Geojson for the agriplot
+class AgriplotGeoJSONAPIView(generics.ListAPIView):
+    serializer_class = AgriplotGeojsonSerializer
+
+    def get_queryset(self):
+        status = self.request.query_params.get('status', None)
+        mill_eq_id = self.request.query_params.get('mill_eq_id', None)
+
+        queryset = Agriplot.objects.filter(is_display=True)
+        if status:
+            queryset = queryset.filter(status_of_plot=status)
+        if mill_eq_id:
+            queryset = queryset.filter(millideq=mill_eq_id)
+
+        return queryset

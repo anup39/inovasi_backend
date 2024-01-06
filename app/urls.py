@@ -1,5 +1,5 @@
 from rest_framework import routers
-from .views import CustomAuthToken, ExampleViewSet, FileUploadAPIView, FacilityViewSet, PieChartViewSet, MillViewSet, TableColumnViewSet, TTPViewSet, AgriplotViewSet, AgriplotResultViewSet, AgriplotResultWKTViewSet
+from .views import CustomAuthToken, ExampleViewSet, FileUploadAPIView, FacilityViewSet, PieChartViewSet, MillViewSet, TableColumnViewSet, TTPViewSet, AgriplotViewSet, AgriplotResultViewSet, AgriplotResultWKTViewSet, AgriplotGeoJSONAPIView
 from django.urls import path, include
 
 
@@ -26,4 +26,6 @@ urlpatterns = [
          name='agriplot-result'),
     path('agriplot-result-wkt/', AgriplotResultWKTViewSet.as_view(),
          name='agriplot-result-wkt'),
+    path('agriplot-geojson/', AgriplotGeoJSONAPIView.as_view(),
+         name='agriplot-geojson'),
 ]
