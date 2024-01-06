@@ -20,6 +20,7 @@ django-environ==0.10.0
 django-filter==23.2
 django-timezone-field==5.1
 djangorestframework==3.14.0
+djangorestframework-gis==1.0
 drf-yasg==1.21.6
 et-xmlfile==1.1.0
 Fiona==1.9.4.post1

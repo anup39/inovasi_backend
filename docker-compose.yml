@@ -40,7 +40,7 @@ services:
     volumes:
       - .:/code
     ports:
-      - "9000:8000"
+      - "9700:8000"
 
     networks:
       - b3d
