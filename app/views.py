@@ -1053,3 +1053,25 @@ class AgriplotGeoJSONAPIView(generics.ListAPIView):
             queryset = queryset.filter(millideq=mill_eq_id)
 
         return queryset
+
+# Geojson for the agriplot
+
+
+class AgriplotGeoJSONAPIViewWKT(generics.ListAPIView):
+    serializer_class = AgriplotGeojsonSerializer
+
+    def get_queryset(self):
+        status = self.request.query_params.get('status', None)
+        geometry_wkt = self.request.query_params.get('geometry_wkt', None)
+        mill_eq_id = self.request.query_params.get('mill_eq_id', None)
+
+        queryset = Agriplot.objects.filter(is_display=True)
+        if status:
+            queryset = queryset.filter(status_of_plot=status)
+        if geometry_wkt:
+            geom = GEOSGeometry(geometry_wkt)
+            queryset = queryset.filter(geom__intersects=geom)
+        if mill_eq_id:
+            queryset = queryset.exclude(millideq=mill_eq_id)
+
+        return queryset

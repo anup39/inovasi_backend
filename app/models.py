@@ -153,6 +153,7 @@ class Mill(models.Model):
     created_at = models.DateTimeField(default=timezone.now, help_text=_(
         "Creation date"), verbose_name=_("Created at"))
     geom = models.PointField(srid=4326, dim=2, null=True)
+    is_planted = models.BooleanField(default=False)
     is_display = models.BooleanField(default=True)
     is_edited = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)

@@ -42,12 +42,7 @@ class TracetoplantationSerializer(serializers.ModelSerializer):
 
 # Geojson for the agriplot
 class AgriplotGeojsonSerializer(GeoFeatureModelSerializer):
-    """ A class to serialize locations as GeoJSON compatible data """
-
     class Meta:
         model = Agriplot
         geo_field = "geom"
-
-        # you can also explicitly declare which fields you want to include
-        # as with a ModelSerializer.
-        fields = ('id', 'mill_name', 'millideq', 'agriplot_id')
+        fields = "__all__"
