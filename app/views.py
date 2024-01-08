@@ -18,9 +18,12 @@ from django.contrib.gis.geos import (
     GEOSGeometry)
 from .filters import TracetoplantationFilter
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Count
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
+import numpy as np
+from django.db.models import F, Count, Sum, FloatField
+from django.db.models.functions import Cast
+
 # Create your views here.
 
 
@@ -636,20 +639,45 @@ class PieChartViewSet(generics.CreateAPIView):
         if section == "agriplot" and distinct == "type_of_supplier":
             from django.db.models import Count, F
             # Get distinct counts
+            plantation = self.request.query_params.get('plantation', None)
+            status = self.request.query_params.get('status', None)
+            mill_eq_id = self.request.query_params.get('mill_eq_id', None)
+            geometry_wkt = self.request.query_params.get('geometry_wkt', None)
 
-            data = (
-                Agriplot.objects.values(display=F('type_of_supplier'))
-                .annotate(count=Count('type_of_supplier'))
-                .order_by('type_of_supplier')
-            )
+            if plantation == "actual":
+                data = (
+                    Agriplot.objects.filter(millideq=mill_eq_id, status_of_plot__iexact=status).values(
+                        display=F('type_of_supplier'))
+                    .annotate(count=Count('type_of_supplier'))
+                    .order_by('type_of_supplier')
+                )
+                total = Agriplot.objects.filter(
+                    millideq=mill_eq_id, status_of_plot__iexact=status).count()
+                for item in data:
+                    item['total'] = total
+                    item['area'] = np.random.randint(10)
+                    item['percentage'] = (item.get('count') / total)*100
+                if len(data) is 0:
+                    data = [{"display": "Nodata", "count": 100,
+                            "total": 0, "percentage": 100}]
+                return Response(data)
+            else:
+                geom = GEOSGeometry(geometry_wkt)
+                data = (
+                    Agriplot.objects.filter(status_of_plot__iexact=status, geom__intersects=geom).values(
+                        display=F('type_of_supplier'))
+                    .annotate(count=Count('type_of_supplier'))
+                    .order_by('type_of_supplier')
+                )
+                total = Agriplot.objects.filter(
+                    status_of_plot__iexact=status, geom__intersects=geom).count()
+                for item in data:
+                    print(item, 'item')
+                    item['total'] = total
+                    item['area'] = np.random.randint(10)
+                    item['percentage'] = (item.get('count') / total)*100
 
-            total = Agriplot.objects.all().count()
-            for item in data:
-                print(item, 'item')
-                item['total'] = total
-                item['percentage'] = (item.get('count') / total)*100
-
-            return Response(data)
+                return Response(data)
 
         if section == "agriplot" and distinct == "risk_assess":
             from django.db.models import Count, F
@@ -1009,7 +1037,7 @@ class TableColumnViewSet(APIView):
                         "headerName": "GHG_LUC",
                     },
                     {
-                        "field": "status_plot",
+                        "field": "status_of_plot",
                         "type": "string",
                         "width": width,
                         "editable": False,
@@ -1023,12 +1051,12 @@ class TableColumnViewSet(APIView):
 
 class AgriplotResultWKTViewSet(APIView):
     def get(self, request, *args, **kwargs):
-        import json
-        estate_ids = request.GET.get('estateids')
+        # mill_eq_id = self.request.query_params.get('mill_eq_id', None)
         geometry_wkt = request.GET.get('geometry_wkt')
         agriplots = Agriplot.objects.filter(
-            id_estate__in=json.loads(estate_ids)
-        )
+            is_display=True, status_of_plot="Registered")
+        # if mill_eq_id:
+        #     agriplots = agriplots.filter(millideq=mill_eq_id)
         if geometry_wkt:
             geom = GEOSGeometry(geometry_wkt)
             agriplots = agriplots.filter(geom__intersects=geom)
