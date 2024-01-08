@@ -653,13 +653,17 @@ class PieChartViewSet(generics.CreateAPIView):
                 )
                 total = Agriplot.objects.filter(
                     millideq=mill_eq_id, status_of_plot__iexact=status).count()
+                opacity = 1
                 for item in data:
                     item['total'] = total
                     item['area'] = np.random.randint(10)
+                    item['opacity'] = opacity
                     item['percentage'] = (item.get('count') / total)*100
+                    opacity = opacity-0.15
+
                 if len(data) is 0:
                     data = [{"display": "Nodata", "count": 100,
-                            "total": 0, "percentage": 100}]
+                            "total": 0, "percentage": 100, opacity: 1}]
                 return Response(data)
             else:
                 geom = GEOSGeometry(geometry_wkt)
@@ -671,11 +675,13 @@ class PieChartViewSet(generics.CreateAPIView):
                 )
                 total = Agriplot.objects.filter(
                     status_of_plot__iexact=status, geom__intersects=geom).count()
+                opacity = 1
                 for item in data:
-                    print(item, 'item')
                     item['total'] = total
+                    item['opacity'] = opacity
                     item['area'] = np.random.randint(10)
                     item['percentage'] = (item.get('count') / total)*100
+                    opacity = opacity-0.15
 
                 return Response(data)
 
