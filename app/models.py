@@ -208,6 +208,10 @@ class Agriplot(models.Model):
         "risk_assess"), verbose_name=_("risk_assess"), null=True)
     ghg_luc = models.CharField(max_length=255, help_text=_(
         "ghg_luc"), verbose_name=_("ghg_luc"), null=True)
+    def_free = models.CharField(max_length=255, help_text=_(
+        "def_free"), verbose_name=_("def_free"), null=True)
+    compliance = models.CharField(max_length=255, help_text=_(
+        "compliance"), verbose_name=_("compliance"), null=True)
     status_of_plot = models.CharField(max_length=255, help_text=_(
         "status_of_plot"), verbose_name=_("status_of_plot"), null=True)
     created_at = models.DateTimeField(default=timezone.now, help_text=_(

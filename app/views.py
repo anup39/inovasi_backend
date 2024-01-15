@@ -121,7 +121,9 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
                     # year_update=row['YearUpdate'],
                     risk_assess=row['RiskAssess'],
                     ghg_luc=row['GHG_LUC'],
-                    status_of_plot=row['Status'],
+                    status_of_plot=row['Legal_Comp'],
+                    def_free=row['Def_Free'],
+                    compliance=row['Compliance'],
                     geom=polygon,
                     actual_supplier=actual_supplier
                 )
@@ -145,7 +147,9 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
                 # year_update=row['YearUpdate'],
                 risk_assess=row['RiskAssess'],
                 ghg_luc=row['GHG_LUC'],
-                status_of_plot=row['Status'],
+                status_of_plot=row['Legal_Comp'],
+                def_free=row['Def_Free'],
+                compliance=row['Compliance'],
                 geom=geom,
                 actual_supplier=actual_supplier
 
