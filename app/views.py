@@ -1,3 +1,4 @@
+import math
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import viewsets
@@ -23,6 +24,8 @@ from rest_framework.authtoken.models import Token
 import numpy as np
 from django.db.models import F, Count, Sum, FloatField
 from django.db.models.functions import Cast
+from django.contrib.gis.measure import D, Distance
+from django.contrib.gis.geos import GEOSGeometry, LineString, Point
 
 # Create your views here.
 
@@ -83,10 +86,10 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
     print(zip_file_name, "zip file name")
     with zipfile.ZipFile(shape_file, "r") as zip_ref:
         zip_ref.extractall('Shapefiles')
-    shape = glob.glob(r'{}/**/*.shp'.format(f'Shapefiles/{zip_file_name}'),
-                      recursive=True)[0]
-    print(shape, 'shape')
-    gdf = gpd.read_file(shape)
+    # shape = glob.glob(r'{}/**/*.shp'.format(f'Shapefiles/{zip_file_name}'),
+    #                   recursive=True)[0]
+    # print(shape, 'shape')
+    gdf = gpd.read_file('Shapefiles/Finaltest_15012024.shp')
     gdf.to_crs(epsg=4326)
     print(gdf.head(), 'gdf')
     gdf.fillna(0, inplace=True)
@@ -689,6 +692,153 @@ class PieChartViewSet(generics.CreateAPIView):
 
                 return Response(data)
 
+        if section == "agriplot" and distinct == "def_free":
+            from django.db.models import Count, F
+            # Get distinct counts
+            plantation = self.request.query_params.get('plantation', None)
+            status = self.request.query_params.get('status', None)
+            mill_eq_id = self.request.query_params.get('mill_eq_id', None)
+            geometry_wkt = self.request.query_params.get('geometry_wkt', None)
+
+            if plantation == "actual":
+                data = (
+                    Agriplot.objects.filter(millideq=mill_eq_id, status_of_plot__iexact=status).values(
+                        display=F('def_free'))
+                    .annotate(count=Count('def_free'))
+                    .order_by('def_free')
+                )
+                total = Agriplot.objects.filter(
+                    millideq=mill_eq_id, status_of_plot__iexact=status).count()
+                opacity = 1
+                for item in data:
+                    item['total'] = total
+                    item['area'] = np.random.randint(10)
+                    item['opacity'] = opacity
+                    item['percentage'] = (item.get('count') / total)*100
+                    opacity = opacity-0.15
+
+                if len(data) is 0:
+                    data = [{"display": "Nodata", "count": 100,
+                            "total": 0, "percentage": 100, opacity: 1}]
+                return Response(data)
+            else:
+                geom = GEOSGeometry(geometry_wkt)
+                data = (
+                    Agriplot.objects.filter(geom__intersects=geom).values(
+                        display=F('def_free'))
+                    .annotate(count=Count('def_free'))
+                    .order_by('def_free')
+                )
+                total = Agriplot.objects.filter(
+                    geom__intersects=geom).count()
+                opacity = 1
+                for item in data:
+                    item['total'] = total
+                    item['opacity'] = opacity
+                    item['area'] = np.random.randint(10)
+                    item['percentage'] = (item.get('count') / total)*100
+                    opacity = opacity-0.15
+
+                return Response(data)
+
+        if section == "agriplot" and distinct == "compliance":
+            from django.db.models import Count, F
+            # Get distinct counts
+            plantation = self.request.query_params.get('plantation', None)
+            status = self.request.query_params.get('status', None)
+            mill_eq_id = self.request.query_params.get('mill_eq_id', None)
+            geometry_wkt = self.request.query_params.get('geometry_wkt', None)
+
+            if plantation == "actual":
+                data = (
+                    Agriplot.objects.filter(millideq=mill_eq_id, status_of_plot__iexact=status).values(
+                        display=F('compliance'))
+                    .annotate(count=Count('compliance'))
+                    .order_by('compliance')
+                )
+                total = Agriplot.objects.filter(
+                    millideq=mill_eq_id, status_of_plot__iexact=status).count()
+                opacity = 1
+                for item in data:
+                    item['total'] = total
+                    item['area'] = np.random.randint(10)
+                    item['opacity'] = opacity
+                    item['percentage'] = (item.get('count') / total)*100
+                    opacity = opacity-0.15
+
+                if len(data) is 0:
+                    data = [{"display": "Nodata", "count": 100,
+                            "total": 0, "percentage": 100, opacity: 1}]
+                return Response(data)
+            else:
+                geom = GEOSGeometry(geometry_wkt)
+                data = (
+                    Agriplot.objects.filter(geom__intersects=geom).values(
+                        display=F('compliance'))
+                    .annotate(count=Count('compliance'))
+                    .order_by('compliance')
+                )
+                total = Agriplot.objects.filter(
+                    geom__intersects=geom).count()
+                opacity = 1
+                for item in data:
+                    item['total'] = total
+                    item['opacity'] = opacity
+                    item['area'] = np.random.randint(10)
+                    item['percentage'] = (item.get('count') / total)*100
+                    opacity = opacity-0.15
+
+                return Response(data)
+
+        if section == "agriplot" and distinct == "status_of_plot":
+            from django.db.models import Count, F
+            # Get distinct counts
+            plantation = self.request.query_params.get('plantation', None)
+            status = self.request.query_params.get('status', None)
+            mill_eq_id = self.request.query_params.get('mill_eq_id', None)
+            geometry_wkt = self.request.query_params.get('geometry_wkt', None)
+
+            if plantation == "actual":
+                data = (
+                    Agriplot.objects.filter(millideq=mill_eq_id, status_of_plot__iexact=status).values(
+                        display=F('compliance'))
+                    .annotate(count=Count('compliance'))
+                    .order_by('compliance')
+                )
+                total = Agriplot.objects.filter(
+                    millideq=mill_eq_id, status_of_plot__iexact=status).count()
+                opacity = 1
+                for item in data:
+                    item['total'] = total
+                    item['area'] = np.random.randint(10)
+                    item['opacity'] = opacity
+                    item['percentage'] = (item.get('count') / total)*100
+                    opacity = opacity-0.15
+
+                if len(data) is 0:
+                    data = [{"display": "Nodata", "count": 100,
+                            "total": 0, "percentage": 100, opacity: 1}]
+                return Response(data)
+            else:
+                geom = GEOSGeometry(geometry_wkt)
+                data = (
+                    Agriplot.objects.filter(geom__intersects=geom).values(
+                        display=F('status_of_plot'))
+                    .annotate(count=Count('status_of_plot'))
+                    .order_by('status_of_plot')
+                )
+                total = Agriplot.objects.filter(
+                    geom__intersects=geom).count()
+                opacity = 1
+                for item in data:
+                    item['total'] = total
+                    item['opacity'] = opacity
+                    item['area'] = np.random.randint(10)
+                    item['percentage'] = (item.get('count') / total)*100
+                    opacity = opacity-0.15
+
+                return Response(data)
+
         if section == "agriplot" and distinct == "risk_assess":
             from django.db.models import Count, F
             # Get distinct counts
@@ -1095,6 +1245,19 @@ class AgriplotGeoJSONAPIView(generics.ListAPIView):
 # Geojson for the agriplot
 
 
+def distance_to_decimal_degrees(distance, latitude):
+    """
+    Source of formulae information:
+        1. https://en.wikipedia.org/wiki/Decimal_degrees
+        2. http://www.movable-type.co.uk/scripts/latlong.html
+    :param distance: an instance of `from django.contrib.gis.measure.Distance`
+    :param latitude: y - coordinate of a point/location
+    """
+    lat_radians = latitude * (math.pi / 180)
+    # 1 longitudinal degree at the equator equal 111,319.5m equiv to 111.32km
+    return distance.m / (111_319.5 * math.cos(lat_radians))
+
+
 class AgriplotGeoJSONAPIViewWKT(generics.ListAPIView):
     serializer_class = AgriplotGeojsonSerializer
 
@@ -1102,14 +1265,47 @@ class AgriplotGeoJSONAPIViewWKT(generics.ListAPIView):
         status = self.request.query_params.get('status', None)
         geometry_wkt = self.request.query_params.get('geometry_wkt', None)
         mill_eq_id = self.request.query_params.get('mill_eq_id', None)
+        radius = self.request.query_params.get('radius', None)
 
         queryset = Agriplot.objects.filter(is_display=True)
+        point = Mill.objects.get(mill_eq_id=mill_eq_id)
+        print(point.geom.coords, 'coords')
         if status:
             queryset = queryset.filter(status_of_plot=status)
         if geometry_wkt:
             geom = GEOSGeometry(geometry_wkt)
+            # queryset = queryset.filter(geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+            #                                                 ), distance_to_decimal_degrees(D(m=int(radius)), point.geom.coords[1])))
+
             queryset = queryset.filter(geom__intersects=geom)
         if mill_eq_id:
             queryset = queryset.exclude(millideq=mill_eq_id)
 
         return queryset
+
+    # def get(self, request, *args, **kwargs):
+    #     status = self.request.query_params.get('status', None)
+    #     geometry_wkt = self.request.query_params.get('geometry_wkt', None)
+    #     mill_eq_id = self.request.query_params.get('mill_eq_id', None)
+
+    #     point = Mill.objects.get(mill_eq_id=mill_eq_id)
+    #     gdf = gpd.read_file('Shapefiles/Finaltest_15012024.shp')
+    #     # Assuming you want to filter gdf based on queryset
+
+    #     #    status_of_plot=row['Legal_Comp'],
+    #     #             def_free=row['Def_Free'],
+    #     #             compliance=row['Compliance'],
+    #     # if status:
+    #     #     gdf = gdf[gdf['Legal_Comp'] == status]
+    #     #     print(gdf, 'gdf')
+    #     # if geometry_wkt:
+    #     #     # Assuming gdf has geometry column 'geometry'
+    #     #     geom = GEOSGeometry(geometry_wkt)
+    #     #     gdf = gdf[gdf['geometry'].apply(lambda x: geom.intersects(x))]
+    #     # if mill_eq_id:
+    #     #     gdf = gdf[~gdf['millideq'].isin([mill_eq_id])]
+
+    #     geojson_data = gdf.to_crs(epsg='4326').to_json()
+    #     geojson_dict = json.loads(geojson_data)
+
+    #     return Response(geojson_dict)

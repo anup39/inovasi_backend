@@ -216,7 +216,8 @@ class Agriplot(models.Model):
         "status_of_plot"), verbose_name=_("status_of_plot"), null=True)
     created_at = models.DateTimeField(default=timezone.now, help_text=_(
         "Creation date"), verbose_name=_("Created at"))
-    geom = models.PolygonField(srid=4326, blank=True, null=True, dim=3)
+    geom = models.PolygonField(
+        srid=4326, blank=True, null=True, dim=3)
     actual_supplier = models.BooleanField(default=True)
     is_display = models.BooleanField(default=True)
     is_edited = models.BooleanField(default=False)
