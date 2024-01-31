@@ -60,5 +60,5 @@ class AgriplotGeojsonSerializer(GeoFeatureModelSerializer):
 class TestAgriplotGeojsonSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = TestAgriplot
-        geo_field = "geometry"
+        geo_field = "geom"
         fields = "__all__"

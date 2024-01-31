@@ -1094,7 +1094,7 @@ class TableColumnViewSet(APIView):
                     },
 
                     {
-                        "field": "ownership_plot",
+                        "field": "ownership",
                         "type": "string",
                         "width": width,
                         "editable": False,
@@ -1123,14 +1123,14 @@ class TableColumnViewSet(APIView):
                         "headerName": "ID_Estate",
                     },
                     {
-                        "field": "agriplot_id",
+                        "field": "agriplotid",
                         "type": "string",
                         "width": width,
                         "editable": False,
                         "headerName": "AgriplotID",
                     },
                     {
-                        "field": "type_of_supplier",
+                        "field": "typeofsupp",
                         "type": "string",
                         "width": width,
                         "editable": False,
@@ -1144,7 +1144,7 @@ class TableColumnViewSet(APIView):
                         "headerName": "Village",
                     },
                     {
-                        "field": "sub_district",
+                        "field": "subdistric",
                         "type": "string",
                         "width": width,
                         "editable": False,
@@ -1172,21 +1172,21 @@ class TableColumnViewSet(APIView):
                         "headerName": "Country",
                     },
                     {
-                        "field": "planted_area",
+                        "field": "planted_ar",
                         "type": "string",
                         "width": width,
                         "editable": False,
                         "headerName": "Planted_Ar",
                     },
                     {
-                        "field": "year_update",
+                        "field": "yearupdate",
                         "type": "string",
                         "width": width,
                         "editable": False,
                         "headerName": "YearUpdate",
                     },
                     {
-                        "field": "risk_assess",
+                        "field": "riskassess",
                         "type": "string",
                         "width": width,
                         "editable": False,
@@ -1200,11 +1200,39 @@ class TableColumnViewSet(APIView):
                         "headerName": "GHG_LUC",
                     },
                     {
-                        "field": "status_of_plot",
+                        "field": "luas",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "Status",
+                        "headerName": "Luas",
+                    },
+                    {
+                        "field": "mill_eq_id",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "mill_eq_id",
+                    },
+                    {
+                        "field": "def_free",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "Def_Free",
+                    },
+                    {
+                        "field": "compliance",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "Compliance",
+                    },
+                    {
+                        "field": "legal_comp",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "Legal_Comp",
                     },
 
                 ]

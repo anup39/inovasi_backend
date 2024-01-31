@@ -268,7 +268,7 @@ class TestAgriplot(models.Model):
         db_column='Compliance', blank=True, null=True)
     legal_comp = models.TextField(
         db_column='Legal_Comp', blank=True, null=True)
-    geometry = models.PolygonField(blank=True, null=True)
+    geom = models.PolygonField(db_column='geometry', blank=True, null=True)
 
     objects = GeoManager()
 
