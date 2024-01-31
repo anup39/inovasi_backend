@@ -3,8 +3,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import viewsets
 from .models import Facility, Refinery, Mill, Agriplot, Tracetomill, Tracetoplantation
+from .models import TestAgriplot
 from .tasks import handleExampleTask
 from .serializer import FileUploadSerializer, ShapeFileUploadSerializer, FacilitySerializer, MillSerializer, AgriplotSerializer, TracetoplantationSerializer, AgriplotGeojsonSerializer
+from .serializer import TestAgriplotSerializer, TestAgriplotGeojsonSerializer
 from django.contrib.gis.geos import Point
 from rest_framework import generics, status
 from drf_yasg import openapi
@@ -1228,13 +1230,13 @@ class AgriplotResultWKTViewSet(APIView):
 
 # Geojson for the agriplot
 class AgriplotGeoJSONAPIView(generics.ListAPIView):
-    serializer_class = AgriplotGeojsonSerializer
+    serializer_class = TestAgriplotGeojsonSerializer
 
     def get_queryset(self):
         status = self.request.query_params.get('status', None)
         mill_eq_id = self.request.query_params.get('mill_eq_id', None)
 
-        queryset = Agriplot.objects.filter(is_display=True)
+        queryset = TestAgriplot.objects.filter(is_display=True)
         if status:
             queryset = queryset.filter(status_of_plot=status)
         if mill_eq_id:

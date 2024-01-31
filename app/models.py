@@ -235,61 +235,42 @@ class Agriplot(models.Model):
 
 class TestAgriplot(models.Model):
     id = models.BigIntegerField(primary_key=True)
-    # Field name made lowercase.
     ownership = models.TextField(db_column='Ownership', blank=True, null=True)
-    # Field name made lowercase.
     subsidiary = models.TextField(
         db_column='Subsidiary', blank=True, null=True)
-    # Field name made lowercase.
     estate = models.TextField(db_column='Estate', blank=True, null=True)
-    # Field name made lowercase.
     id_estate = models.TextField(db_column='ID_Estate', blank=True, null=True)
-    # Field name made lowercase.
     agriplotid = models.TextField(
         db_column='AgriplotID', blank=True, null=True)
-    # Field name made lowercase.
     typeofsupp = models.TextField(
         db_column='TypeOfSupp', blank=True, null=True)
-    # Field name made lowercase.
     village = models.TextField(db_column='Village', blank=True, null=True)
-    # Field name made lowercase.
     subdistric = models.TextField(
         db_column='SubDistric', blank=True, null=True)
-    # Field name made lowercase.
     district = models.TextField(db_column='District', blank=True, null=True)
-    # Field name made lowercase.
     province = models.TextField(db_column='Province', blank=True, null=True)
-    # Field name made lowercase.
     country = models.TextField(db_column='Country', blank=True, null=True)
-    # Field name made lowercase.
     planted_ar = models.FloatField(
         db_column='Planted_Ar', blank=True, null=True)
-    # Field name made lowercase.
     yearupdate = models.TextField(
         db_column='YearUpdate', blank=True, null=True)
-    # Field name made lowercase.
     riskassess = models.TextField(
         db_column='RiskAssess', blank=True, null=True)
-    # Field name made lowercase.
     ghg_luc = models.TextField(db_column='GHG_LUC', blank=True, null=True)
-    # Field name made lowercase.
     luas = models.FloatField(db_column='Luas', blank=True, null=True)
-    # Field name made lowercase.
     shape_leng = models.FloatField(
         db_column='Shape_Leng', blank=True, null=True)
-    # Field name made lowercase.
     shape_area = models.FloatField(
         db_column='Shape_Area', blank=True, null=True)
     mill_eq_id = models.TextField(blank=True, null=True)
-    # Field name made lowercase.
     def_free = models.TextField(db_column='Def_Free', blank=True, null=True)
-    # Field name made lowercase.
     compliance = models.TextField(
         db_column='Compliance', blank=True, null=True)
-    # Field name made lowercase.
     legal_comp = models.TextField(
         db_column='Legal_Comp', blank=True, null=True)
     geometry = models.PolygonField(blank=True, null=True)
+
+    objects = GeoManager()
 
     class Meta:
         managed = False
