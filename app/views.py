@@ -632,12 +632,12 @@ class PieChartViewSet(generics.CreateAPIView):
             from django.db.models import Count, F
             # Get distinct counts
             data = (
-                Agriplot.objects.values(display=F('country'))
+                TestAgriplot.objects.values(display=F('country'))
                 .annotate(count=Count('country'))
                 .order_by('country')
             )
 
-            total = Agriplot.objects.all().count()
+            total = TestAgriplot.objects.all().count()
             for item in data:
                 print(item, 'item')
                 item['total'] = total
@@ -651,17 +651,17 @@ class PieChartViewSet(generics.CreateAPIView):
             plantation = self.request.query_params.get('plantation', None)
             status = self.request.query_params.get('status', None)
             mill_eq_id = self.request.query_params.get('mill_eq_id', None)
-            geometry_wkt = self.request.query_params.get('geometry_wkt', None)
+            radius = self.request.query_params.get('radius', None)
 
             if plantation == "actual":
                 data = (
-                    Agriplot.objects.filter(millideq=mill_eq_id, status_of_plot__iexact=status).values(
-                        display=F('type_of_supplier'))
-                    .annotate(count=Count('type_of_supplier'))
-                    .order_by('type_of_supplier')
+                    TestAgriplot.objects.filter(mill_eq_id=mill_eq_id, legal_comp__iexact=status).values(
+                        display=F('typeofsupp'))
+                    .annotate(count=Count('typeofsupp'))
+                    .order_by('typeofsupp')
                 )
-                total = Agriplot.objects.filter(
-                    millideq=mill_eq_id, status_of_plot__iexact=status).count()
+                total = TestAgriplot.objects.filter(
+                    mill_eq_id=mill_eq_id, legal_comp__iexact=status).count()
                 opacity = 1
                 for item in data:
                     item['total'] = total
@@ -675,15 +675,17 @@ class PieChartViewSet(generics.CreateAPIView):
                             "total": 0, "percentage": 100, opacity: 1}]
                 return Response(data)
             else:
-                geom = GEOSGeometry(geometry_wkt)
+                # geom = GEOSGeometry(geometry_wkt)
+                point = Mill.objects.get(mill_eq_id=mill_eq_id)
                 data = (
-                    Agriplot.objects.filter(status_of_plot__iexact=status, geom__intersects=geom).values(
-                        display=F('type_of_supplier'))
-                    .annotate(count=Count('type_of_supplier'))
-                    .order_by('type_of_supplier')
+                    TestAgriplot.objects.filter(legal_comp__iexact=status, geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+                                                                                                ), radius)).values(
+                        display=F('typeofsupp'))
+                    .annotate(count=Count('typeofsupp'))
+                    .order_by('typeofsupp')
                 )
-                total = Agriplot.objects.filter(
-                    status_of_plot__iexact=status, geom__intersects=geom).count()
+                total = TestAgriplot.objects.filter(legal_comp__iexact=status, geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+                                                                                                    ), radius)).count()
                 opacity = 1
                 for item in data:
                     item['total'] = total
@@ -700,17 +702,17 @@ class PieChartViewSet(generics.CreateAPIView):
             plantation = self.request.query_params.get('plantation', None)
             status = self.request.query_params.get('status', None)
             mill_eq_id = self.request.query_params.get('mill_eq_id', None)
-            geometry_wkt = self.request.query_params.get('geometry_wkt', None)
+            radius = self.request.query_params.get('radius', None)
 
             if plantation == "actual":
                 data = (
-                    Agriplot.objects.filter(millideq=mill_eq_id, status_of_plot__iexact=status).values(
+                    TestAgriplot.objects.filter(mill_eq_id=mill_eq_id, legal_comp__iexact=status).values(
                         display=F('def_free'))
                     .annotate(count=Count('def_free'))
                     .order_by('def_free')
                 )
-                total = Agriplot.objects.filter(
-                    millideq=mill_eq_id, status_of_plot__iexact=status).count()
+                total = TestAgriplot.objects.filter(
+                    mill_eq_id=mill_eq_id, legal_comp__iexact=status).count()
                 opacity = 1
                 for item in data:
                     item['total'] = total
@@ -724,15 +726,17 @@ class PieChartViewSet(generics.CreateAPIView):
                             "total": 0, "percentage": 100, opacity: 1}]
                 return Response(data)
             else:
-                geom = GEOSGeometry(geometry_wkt)
+                # geom = GEOSGeometry(geometry_wkt)
+                point = Mill.objects.get(mill_eq_id=mill_eq_id)
                 data = (
-                    Agriplot.objects.filter(geom__intersects=geom).values(
+                    TestAgriplot.objects.filter(legal_comp__iexact=status, geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+                                                                                                ), radius)).values(
                         display=F('def_free'))
                     .annotate(count=Count('def_free'))
                     .order_by('def_free')
                 )
-                total = Agriplot.objects.filter(
-                    geom__intersects=geom).count()
+                total = TestAgriplot.objects.filter(legal_comp__iexact=status, geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+                                                                                                    ), radius)).count()
                 opacity = 1
                 for item in data:
                     item['total'] = total
@@ -749,17 +753,17 @@ class PieChartViewSet(generics.CreateAPIView):
             plantation = self.request.query_params.get('plantation', None)
             status = self.request.query_params.get('status', None)
             mill_eq_id = self.request.query_params.get('mill_eq_id', None)
-            geometry_wkt = self.request.query_params.get('geometry_wkt', None)
+            radius = self.request.query_params.get('radius', None)
 
             if plantation == "actual":
                 data = (
-                    Agriplot.objects.filter(millideq=mill_eq_id, status_of_plot__iexact=status).values(
+                    TestAgriplot.objects.filter(mill_eq_id=mill_eq_id, legal_comp__iexact=status).values(
                         display=F('compliance'))
                     .annotate(count=Count('compliance'))
                     .order_by('compliance')
                 )
-                total = Agriplot.objects.filter(
-                    millideq=mill_eq_id, status_of_plot__iexact=status).count()
+                total = TestAgriplot.objects.filter(
+                    mill_eq_id=mill_eq_id, legal_comp__iexact=status).count()
                 opacity = 1
                 for item in data:
                     item['total'] = total
@@ -773,15 +777,17 @@ class PieChartViewSet(generics.CreateAPIView):
                             "total": 0, "percentage": 100, opacity: 1}]
                 return Response(data)
             else:
-                geom = GEOSGeometry(geometry_wkt)
+                # geom = GEOSGeometry(geometry_wkt)
+                point = Mill.objects.get(mill_eq_id=mill_eq_id)
                 data = (
-                    Agriplot.objects.filter(geom__intersects=geom).values(
+                    TestAgriplot.objects.filter(legal_comp__iexact=status, geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+                                                                                                ), radius)).values(
                         display=F('compliance'))
                     .annotate(count=Count('compliance'))
                     .order_by('compliance')
                 )
-                total = Agriplot.objects.filter(
-                    geom__intersects=geom).count()
+                total = TestAgriplot.objects.filter(legal_comp__iexact=status, geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+                                                                                                    ), radius)).count()
                 opacity = 1
                 for item in data:
                     item['total'] = total
@@ -798,17 +804,17 @@ class PieChartViewSet(generics.CreateAPIView):
             plantation = self.request.query_params.get('plantation', None)
             status = self.request.query_params.get('status', None)
             mill_eq_id = self.request.query_params.get('mill_eq_id', None)
-            geometry_wkt = self.request.query_params.get('geometry_wkt', None)
+            radius = self.request.query_params.get('radius', None)
 
             if plantation == "actual":
                 data = (
-                    Agriplot.objects.filter(millideq=mill_eq_id, status_of_plot__iexact=status).values(
-                        display=F('compliance'))
-                    .annotate(count=Count('compliance'))
-                    .order_by('compliance')
+                    TestAgriplot.objects.filter(mill_eq_id=mill_eq_id, legal_comp__iexact=status).values(
+                        display=F('legal_comp'))
+                    .annotate(count=Count('legal_comp'))
+                    .order_by('legal_comp')
                 )
-                total = Agriplot.objects.filter(
-                    millideq=mill_eq_id, status_of_plot__iexact=status).count()
+                total = TestAgriplot.objects.filter(
+                    mill_eq_id=mill_eq_id, legal_comp__iexact=status).count()
                 opacity = 1
                 for item in data:
                     item['total'] = total
@@ -822,15 +828,17 @@ class PieChartViewSet(generics.CreateAPIView):
                             "total": 0, "percentage": 100, opacity: 1}]
                 return Response(data)
             else:
-                geom = GEOSGeometry(geometry_wkt)
+                # geom = GEOSGeometry(geometry_wkt)
+                point = Mill.objects.get(mill_eq_id=mill_eq_id)
                 data = (
-                    Agriplot.objects.filter(geom__intersects=geom).values(
-                        display=F('status_of_plot'))
-                    .annotate(count=Count('status_of_plot'))
-                    .order_by('status_of_plot')
+                    TestAgriplot.objects.filter(legal_comp__iexact=status, geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+                                                                                                ), radius)).values(
+                        display=F('legal_comp'))
+                    .annotate(count=Count('legal_comp'))
+                    .order_by('legal_comp')
                 )
-                total = Agriplot.objects.filter(
-                    geom__intersects=geom).count()
+                total = TestAgriplot.objects.filter(legal_comp__iexact=status, geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+                                                                                                    ), radius)).count()
                 opacity = 1
                 for item in data:
                     item['total'] = total
@@ -845,12 +853,12 @@ class PieChartViewSet(generics.CreateAPIView):
             from django.db.models import Count, F
             # Get distinct counts
             data = (
-                Agriplot.objects.values(display=F('risk_assess'))
-                .annotate(count=Count('risk_assess'))
-                .order_by('risk_assess')
+                TestAgriplot.objects.values(display=F('riskassess'))
+                .annotate(count=Count('riskassess'))
+                .order_by('riskassess')
             )
 
-            total = Agriplot.objects.all().count()
+            total = TestAgriplot.objects.all().count()
             for item in data:
                 print(item, 'item')
                 item['total'] = total
