@@ -899,11 +899,12 @@ class TTPViewSet(viewsets.ModelViewSet):
 class AgriplotResultViewSet(APIView):
     def get(self, request, *args, **kwargs):
         import json
-        estate_ids = request.GET.get('estateids')
-        agriplots = Agriplot.objects.filter(
-            id_estate__in=json.loads(estate_ids)
+        status = self.request.query_params.get('status', None)
+        mill_eq_id = self.request.query_params.get('mill_eq_id', None)
+        agriplots = TestAgriplot.objects.filter(
+            legal_comp=status, mill_eq_id=mill_eq_id
         )
-        serializer = AgriplotSerializer(agriplots, many=True)
+        serializer = TestAgriplotSerializer(agriplots, many=True)
 
         return Response(serializer.data)
 
@@ -1215,15 +1216,15 @@ class AgriplotResultWKTViewSet(APIView):
     def get(self, request, *args, **kwargs):
         # mill_eq_id = self.request.query_params.get('mill_eq_id', None)
         geometry_wkt = request.GET.get('geometry_wkt')
-        agriplots = Agriplot.objects.filter(
-            is_display=True, status_of_plot="Registered")
+        agriplots = TestAgriplot.objects.filter(
+            legal_comp="Registered")
         # if mill_eq_id:
         #     agriplots = agriplots.filter(millideq=mill_eq_id)
         if geometry_wkt:
             geom = GEOSGeometry(geometry_wkt)
-            agriplots = agriplots.filter(geom__intersects=geom)
+            agriplots = agriplots.filter(geometry__intersects=geom)
 
-        serializer = AgriplotSerializer(agriplots, many=True)
+        serializer = TestAgriplotSerializer(agriplots, many=True)
 
         return Response(serializer.data)
 
@@ -1236,11 +1237,11 @@ class AgriplotGeoJSONAPIView(generics.ListAPIView):
         status = self.request.query_params.get('status', None)
         mill_eq_id = self.request.query_params.get('mill_eq_id', None)
 
-        queryset = TestAgriplot.objects.filter(is_display=True)
+        queryset = TestAgriplot.objects.all()
         if status:
-            queryset = queryset.filter(status_of_plot=status)
+            queryset = queryset.filter(legal_comp=status)
         if mill_eq_id:
-            queryset = queryset.filter(millideq=mill_eq_id)
+            queryset = queryset.filter(mill_eq_id=mill_eq_id)
 
         return queryset
 

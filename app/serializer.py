@@ -37,6 +37,7 @@ class AgriplotSerializer(serializers.ModelSerializer):
 class TestAgriplotSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestAgriplot
+        fields = "__all__"
 
 
 class TracetoplantationSerializer(serializers.ModelSerializer):
