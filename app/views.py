@@ -1242,15 +1242,18 @@ class TableColumnViewSet(APIView):
 
 class AgriplotResultWKTViewSet(APIView):
     def get(self, request, *args, **kwargs):
-        # mill_eq_id = self.request.query_params.get('mill_eq_id', None)
-        geometry_wkt = request.GET.get('geometry_wkt')
-        agriplots = TestAgriplot.objects.filter(
-            legal_comp="Registered")
-        # if mill_eq_id:
-        #     agriplots = agriplots.filter(millideq=mill_eq_id)
-        if geometry_wkt:
-            geom = GEOSGeometry(geometry_wkt)
-            agriplots = agriplots.filter(geometry__intersects=geom)
+        status = self.request.query_params.get('status', None)
+        # geometry_wkt = self.request.query_params.get('geometry_wkt', None)
+        mill_eq_id = self.request.query_params.get('mill_eq_id', None)
+        radius = self.request.query_params.get('radius', None)
+        agriplots = TestAgriplot.objects.all()
+        point = Mill.objects.get(mill_eq_id=mill_eq_id)
+        if status:
+            agriplots = agriplots.filter(legal_comp=status)
+        if radius:
+            # geom = GEOSGeometry(geometry_wkt)
+            agriplots = agriplots.filter(geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+                                                              ), radius))
 
         serializer = TestAgriplotSerializer(agriplots, many=True)
 
@@ -1290,7 +1293,7 @@ def distance_to_decimal_degrees(distance, latitude):
 
 
 class AgriplotGeoJSONAPIViewWKT(generics.ListAPIView):
-    serializer_class = AgriplotGeojsonSerializer
+    serializer_class = TestAgriplotGeojsonSerializer
 
     def get_queryset(self):
         status = self.request.query_params.get('status', None)
@@ -1298,19 +1301,19 @@ class AgriplotGeoJSONAPIViewWKT(generics.ListAPIView):
         mill_eq_id = self.request.query_params.get('mill_eq_id', None)
         radius = self.request.query_params.get('radius', None)
 
-        queryset = Agriplot.objects.filter(is_display=True)
+        queryset = TestAgriplot.objects.all()
         point = Mill.objects.get(mill_eq_id=mill_eq_id)
         print(point.geom.coords, 'coords')
         if status:
-            queryset = queryset.filter(status_of_plot=status)
-        if geometry_wkt:
-            geom = GEOSGeometry(geometry_wkt)
-            # queryset = queryset.filter(geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
-            #                                                 ), distance_to_decimal_degrees(D(m=int(radius)), point.geom.coords[1])))
+            queryset = queryset.filter(legal_comp=status)
+        if radius:
+            # geom = GEOSGeometry(geometry_wkt)
+            queryset = queryset.filter(geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+                                                            ), distance_to_decimal_degrees(D(m=int(50000)), point.geom.coords[1])))
 
-            queryset = queryset.filter(geom__intersects=geom)
+            # queryset = queryset.filter(geom__intersects=geom)
         if mill_eq_id:
-            queryset = queryset.exclude(millideq=mill_eq_id)
+            queryset = queryset.exclude(mill_eq_id=mill_eq_id)
 
         return queryset
 

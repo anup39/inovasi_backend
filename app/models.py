@@ -235,39 +235,39 @@ class Agriplot(models.Model):
 
 class TestAgriplot(models.Model):
     id = models.BigIntegerField(primary_key=True)
-    ownership = models.TextField(db_column='Ownership', blank=True, null=True)
+    ownership = models.TextField(db_column='ownership', blank=True, null=True)
     subsidiary = models.TextField(
-        db_column='Subsidiary', blank=True, null=True)
-    estate = models.TextField(db_column='Estate', blank=True, null=True)
-    id_estate = models.TextField(db_column='ID_Estate', blank=True, null=True)
+        db_column='subsidiary', blank=True, null=True)
+    estate = models.TextField(db_column='estate', blank=True, null=True)
+    id_estate = models.TextField(db_column='id_estate', blank=True, null=True)
     agriplotid = models.TextField(
-        db_column='AgriplotID', blank=True, null=True)
+        db_column='agriplotid', blank=True, null=True)
     typeofsupp = models.TextField(
-        db_column='TypeOfSupp', blank=True, null=True)
-    village = models.TextField(db_column='Village', blank=True, null=True)
+        db_column='typeofsupp', blank=True, null=True)
+    village = models.TextField(db_column='village', blank=True, null=True)
     subdistric = models.TextField(
-        db_column='SubDistric', blank=True, null=True)
-    district = models.TextField(db_column='District', blank=True, null=True)
-    province = models.TextField(db_column='Province', blank=True, null=True)
-    country = models.TextField(db_column='Country', blank=True, null=True)
+        db_column='subdistric', blank=True, null=True)
+    district = models.TextField(db_column='district', blank=True, null=True)
+    province = models.TextField(db_column='province', blank=True, null=True)
+    country = models.TextField(db_column='country', blank=True, null=True)
     planted_ar = models.FloatField(
-        db_column='Planted_Ar', blank=True, null=True)
+        db_column='planted_ar', blank=True, null=True)
     yearupdate = models.TextField(
-        db_column='YearUpdate', blank=True, null=True)
+        db_column='yearupdate', blank=True, null=True)
     riskassess = models.TextField(
-        db_column='RiskAssess', blank=True, null=True)
-    ghg_luc = models.TextField(db_column='GHG_LUC', blank=True, null=True)
-    luas = models.FloatField(db_column='Luas', blank=True, null=True)
+        db_column='riskassess', blank=True, null=True)
+    ghg_luc = models.TextField(db_column='ghg_luc', blank=True, null=True)
+    luas = models.FloatField(db_column='luas', blank=True, null=True)
     shape_leng = models.FloatField(
-        db_column='Shape_Leng', blank=True, null=True)
+        db_column='shape_leng', blank=True, null=True)
     shape_area = models.FloatField(
-        db_column='Shape_Area', blank=True, null=True)
+        db_column='shape_area', blank=True, null=True)
     mill_eq_id = models.TextField(blank=True, null=True)
-    def_free = models.TextField(db_column='Def_Free', blank=True, null=True)
+    def_free = models.TextField(db_column='def_free', blank=True, null=True)
     compliance = models.TextField(
-        db_column='Compliance', blank=True, null=True)
+        db_column='compliance', blank=True, null=True)
     legal_comp = models.TextField(
-        db_column='Legal_Comp', blank=True, null=True)
+        db_column='legal_comp',  blank=True, null=True)
     geom = models.PolygonField(db_column='geometry', blank=True, null=True)
 
     objects = GeoManager()

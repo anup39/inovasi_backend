@@ -94,7 +94,7 @@ BEGIN
     statusplot := trim((query_params::jsonb) ->> 'status');
     SELECT INTO mvt ST_AsMVT(tile, 'function_zxy_query_test_agriplot_by_radius_and_status', 4096, 'geom') FROM (
         SELECT
-            ST_AsMVTGeom(ST_Transform(geometry, 3857), ST_TileEnvelope(z, x, y), 4096, 64, true) AS  geom , legal_comp
+            ST_AsMVTGeom(ST_Transform(geometry, 3857), ST_TileEnvelope(z, x, y), 4096, 64, true) AS  geom , id,  ownership, subsidiary, estate, id_estate, agriplotid, typeofsupp, village, subdistric, district, province, country, planted_ar, yearupdate, riskassess, ghg_luc, luas, shape_leng, shape_area, mill_eq_id , def_free, compliance, legal_comp
         FROM public.test_agriplot 
         WHERE public.test_agriplot.legal_comp = statusplot  AND ST_DWithin(public.test_agriplot.geometry, ST_GeomFromText(query_params->>'mill_point', 4326), radius::double precision)
     ) AS tile WHERE geom IS NOT NULL;
