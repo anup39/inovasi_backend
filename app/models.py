@@ -153,6 +153,7 @@ class Mill(models.Model):
     created_at = models.DateTimeField(default=timezone.now, help_text=_(
         "Creation date"), verbose_name=_("Created at"))
     geom = models.PointField(srid=4326, dim=2, null=True)
+    is_planted = models.BooleanField(default=False)
     is_display = models.BooleanField(default=True)
     is_edited = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
@@ -173,6 +174,8 @@ class Agriplot(models.Model):
         "id_mill"), verbose_name=_("id_mill"), null=True)
     mill_name = models.CharField(max_length=255, help_text=_(
         "mill_name"), verbose_name=_("mill_name"), null=True)
+    millideq = models.CharField(max_length=255, help_text=_(
+        "millideq"), verbose_name=_("millideq"), null=True)
     ownership_plot = models.CharField(max_length=255, help_text=_(
         "ownership"), verbose_name=_("ownership"), null=True)
     subsidiary = models.CharField(max_length=255, help_text=_(
@@ -205,11 +208,16 @@ class Agriplot(models.Model):
         "risk_assess"), verbose_name=_("risk_assess"), null=True)
     ghg_luc = models.CharField(max_length=255, help_text=_(
         "ghg_luc"), verbose_name=_("ghg_luc"), null=True)
-    status_plot = models.CharField(max_length=255, help_text=_(
-        "status"), verbose_name=_("status"), null=True)
+    def_free = models.CharField(max_length=255, help_text=_(
+        "def_free"), verbose_name=_("def_free"), null=True)
+    compliance = models.CharField(max_length=255, help_text=_(
+        "compliance"), verbose_name=_("compliance"), null=True)
+    status_of_plot = models.CharField(max_length=255, help_text=_(
+        "status_of_plot"), verbose_name=_("status_of_plot"), null=True)
     created_at = models.DateTimeField(default=timezone.now, help_text=_(
         "Creation date"), verbose_name=_("Created at"))
-    geom = models.PolygonField(srid=4326, blank=True, null=True, dim=3)
+    geom = models.PolygonField(
+        srid=4326, blank=True, null=True, dim=3)
     actual_supplier = models.BooleanField(default=True)
     is_display = models.BooleanField(default=True)
     is_edited = models.BooleanField(default=False)
@@ -223,6 +231,50 @@ class Agriplot(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+
+class TestAgriplot(models.Model):
+    id = models.BigIntegerField(primary_key=True)
+    ownership = models.TextField(db_column='ownership', blank=True, null=True)
+    subsidiary = models.TextField(
+        db_column='subsidiary', blank=True, null=True)
+    estate = models.TextField(db_column='estate', blank=True, null=True)
+    id_estate = models.TextField(db_column='id_estate', blank=True, null=True)
+    agriplotid = models.TextField(
+        db_column='agriplotid', blank=True, null=True)
+    typeofsupp = models.TextField(
+        db_column='typeofsupp', blank=True, null=True)
+    village = models.TextField(db_column='village', blank=True, null=True)
+    subdistric = models.TextField(
+        db_column='subdistric', blank=True, null=True)
+    district = models.TextField(db_column='district', blank=True, null=True)
+    province = models.TextField(db_column='province', blank=True, null=True)
+    country = models.TextField(db_column='country', blank=True, null=True)
+    planted_ar = models.FloatField(
+        db_column='planted_ar', blank=True, null=True)
+    yearupdate = models.TextField(
+        db_column='yearupdate', blank=True, null=True)
+    riskassess = models.TextField(
+        db_column='riskassess', blank=True, null=True)
+    ghg_luc = models.TextField(db_column='ghg_luc', blank=True, null=True)
+    luas = models.FloatField(db_column='luas', blank=True, null=True)
+    shape_leng = models.FloatField(
+        db_column='shape_leng', blank=True, null=True)
+    shape_area = models.FloatField(
+        db_column='shape_area', blank=True, null=True)
+    mill_eq_id = models.TextField(blank=True, null=True)
+    def_free = models.TextField(db_column='def_free', blank=True, null=True)
+    compliance = models.TextField(
+        db_column='compliance', blank=True, null=True)
+    legal_comp = models.TextField(
+        db_column='legal_comp',  blank=True, null=True)
+    geom = models.PolygonField(db_column='geometry', blank=True, null=True)
+
+    objects = GeoManager()
+
+    class Meta:
+        managed = False
+        db_table = 'test_agriplot'
 
 
 class Tracetomill(models.Model):
@@ -291,37 +343,37 @@ class Tracetoplantation(models.Model):
         return str(self.mill_name)
 
 
-class PlantedOutsideLandRegistration(models.Model):
-    id = models.AutoField(primary_key=True)
-    mukim = models.CharField(max_length=255, help_text=_(
-        "mukim"), verbose_name=_("mukim"), null=True)
-    id_mukim = models.CharField(max_length=255, help_text=_(
-        "id_mukim"), verbose_name=_("id_mukim"), null=True)
-    daerah = models.CharField(max_length=255, help_text=_(
-        "daerah"), verbose_name=_("daerah"), null=True)
-    id_daerah = models.CharField(max_length=255, help_text=_(
-        "id_daerah"), verbose_name=_("id_daerah"), null=True)
-    negeri = models.CharField(max_length=255, help_text=_(
-        "negeri"), verbose_name=_("negeri"), null=True)
-    id_negeri = models.CharField(max_length=255, help_text=_(
-        "id_negeri"), verbose_name=_("id_negeri"), null=True)
-    country = models.CharField(max_length=255, help_text=_(
-        "country"), verbose_name=_("country"), null=True)
-    note = models.CharField(max_length=255, help_text=_(
-        "note"), verbose_name=_("note"), null=True)
-    status_plot = models.CharField(max_length=255, help_text=_(
-        "status"), verbose_name=_("status"), null=True)
-    created_at = models.DateTimeField(default=timezone.now, help_text=_(
-        "Creation date"), verbose_name=_("Created at"))
-    geom = models.PolygonField(srid=4326, blank=True, null=True, dim=3)
+# class PlantedOutsideLandRegistration(models.Model):
+#     id = models.AutoField(primary_key=True)
+#     mukim = models.CharField(max_length=255, help_text=_(
+#         "mukim"), verbose_name=_("mukim"), null=True)
+#     id_mukim = models.CharField(max_length=255, help_text=_(
+#         "id_mukim"), verbose_name=_("id_mukim"), null=True)
+#     daerah = models.CharField(max_length=255, help_text=_(
+#         "daerah"), verbose_name=_("daerah"), null=True)
+#     id_daerah = models.CharField(max_length=255, help_text=_(
+#         "id_daerah"), verbose_name=_("id_daerah"), null=True)
+#     negeri = models.CharField(max_length=255, help_text=_(
+#         "negeri"), verbose_name=_("negeri"), null=True)
+#     id_negeri = models.CharField(max_length=255, help_text=_(
+#         "id_negeri"), verbose_name=_("id_negeri"), null=True)
+#     country = models.CharField(max_length=255, help_text=_(
+#         "country"), verbose_name=_("country"), null=True)
+#     note = models.CharField(max_length=255, help_text=_(
+#         "note"), verbose_name=_("note"), null=True)
+#     status_plot = models.CharField(max_length=255, help_text=_(
+#         "status"), verbose_name=_("status"), null=True)
+#     created_at = models.DateTimeField(default=timezone.now, help_text=_(
+#         "Creation date"), verbose_name=_("Created at"))
+#     geom = models.PolygonField(srid=4326, blank=True, null=True, dim=3)
 
-    is_display = models.BooleanField(default=True)
-    is_edited = models.BooleanField(default=False)
-    is_deleted = models.BooleanField(default=False)
+#     is_display = models.BooleanField(default=True)
+#     is_edited = models.BooleanField(default=False)
+#     is_deleted = models.BooleanField(default=False)
 
-    class Meta:
-        verbose_name = _("PlantedOutsideLandRegistration")
-        verbose_name_plural = _("PlantedOutsideLandRegistrations")
+#     class Meta:
+#         verbose_name = _("PlantedOutsideLandRegistration")
+#         verbose_name_plural = _("PlantedOutsideLandRegistrations")
 
-    def __str__(self):
-        return str(self.mukim)
+#     def __str__(self):
+#         return str(self.mukim)

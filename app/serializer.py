@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import Facility, Mill, Agriplot, Tracetoplantation
+from .models import TestAgriplot
+from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 
 class FileUploadSerializer(serializers.Serializer):
@@ -32,8 +34,31 @@ class AgriplotSerializer(serializers.ModelSerializer):
                    "is_deleted", "is_edited", "actual_supplier")
 
 
+class TestAgriplotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TestAgriplot
+        fields = "__all__"
+
+
 class TracetoplantationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tracetoplantation
         exclude = ("created_at", "is_display",
                    "is_deleted", "is_edited",)
+
+
+# Geojson for the agriplot
+class AgriplotGeojsonSerializer(GeoFeatureModelSerializer):
+    class Meta:
+        model = Agriplot
+        geo_field = "geom"
+        fields = "__all__"
+
+# Geojson for the  test agriplot
+
+
+class TestAgriplotGeojsonSerializer(GeoFeatureModelSerializer):
+    class Meta:
+        model = TestAgriplot
+        geo_field = "geom"
+        fields = "__all__"

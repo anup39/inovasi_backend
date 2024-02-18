@@ -1,15 +1,19 @@
+import math
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import viewsets
-from .models import Facility, Refinery, Mill, Agriplot, Tracetomill, Tracetoplantation, PlantedOutsideLandRegistration
+from .models import Facility, Refinery, Mill, Agriplot, Tracetomill, Tracetoplantation
+from .models import TestAgriplot
 from .tasks import handleExampleTask
-from .serializer import FileUploadSerializer, ShapeFileUploadSerializer, FacilitySerializer, MillSerializer, AgriplotSerializer, TracetoplantationSerializer
+from .serializer import FileUploadSerializer, ShapeFileUploadSerializer, FacilitySerializer, MillSerializer, AgriplotSerializer, TracetoplantationSerializer, AgriplotGeojsonSerializer
+from .serializer import TestAgriplotSerializer, TestAgriplotGeojsonSerializer
 from django.contrib.gis.geos import Point
 from rest_framework import generics, status
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 import pandas as pd
 import zipfile
+import os
 import glob
 from django.core.exceptions import ValidationError
 import geopandas as gpd
@@ -17,10 +21,33 @@ from django.contrib.gis.geos import (
     GEOSGeometry)
 from .filters import TracetoplantationFilter
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Count
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
+import numpy as np
+from django.db.models import F, Count, Sum, FloatField
+from django.db.models.functions import Cast
+from django.contrib.gis.measure import D, Distance
+from django.contrib.gis.geos import GEOSGeometry, LineString, Point
+
 # Create your views here.
+
+
+def create_shapefiles_folder():
+    folder_path = 'Shapefiles'
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+        print(f"Folder '{folder_path}' created successfully.")
+    else:
+        print(f"Folder '{folder_path}' already exists.")
+
+
+def get_zip_file_name(zip_file_path):
+    file_name, file_extension = os.path.splitext(zip_file_path)
+
+    if file_extension.lower() == '.zip':
+        return file_name
+    else:
+        return None
 
 
 def checkUploadFileValidationGlobal(shape_file):
@@ -56,12 +83,15 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
         actual_supplier = True
     else:
         actual_supplier = False
+    create_shapefiles_folder()
+    zip_file_name = get_zip_file_name(str(shape_file))
+    print(zip_file_name, "zip file name")
     with zipfile.ZipFile(shape_file, "r") as zip_ref:
-        zip_ref.extractall(str(shape_file))
-    shape = glob.glob(r'{}/**/*.shp'.format(str(shape_file)),
-                      recursive=True)[0]
-    print(shape, 'shape')
-    gdf = gpd.read_file(shape)
+        zip_ref.extractall('Shapefiles')
+    # shape = glob.glob(r'{}/**/*.shp'.format(f'Shapefiles/{zip_file_name}'),
+    #                   recursive=True)[0]
+    # print(shape, 'shape')
+    gdf = gpd.read_file('Shapefiles/Finaltest_15012024.shp')
     gdf.to_crs(epsg=4326)
     print(gdf.head(), 'gdf')
     gdf.fillna(0, inplace=True)
@@ -81,6 +111,7 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
                     # id_mill=row['ID_Mill'],
                     # mill_name=row['Mill_Name'],
                     ownership_plot=row['Ownership'],
+                    millideq=row['mill_eq_id'],
                     subsidiary=row['Subsidiary'],
                     estate=row['Estate'],
                     id_estate=row['ID_Estate'],
@@ -92,10 +123,12 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
                     province=row['Province'],
                     country=row['Country'],
                     planted_area=row['Planted_Ar'],
-                    year_update=row['YearUpdate'],
+                    # year_update=row['YearUpdate'],
                     risk_assess=row['RiskAssess'],
                     ghg_luc=row['GHG_LUC'],
-                    status_plot=row['Status'],
+                    status_of_plot=row['Legal_Comp'],
+                    def_free=row['Def_Free'],
+                    compliance=row['Compliance'],
                     geom=polygon,
                     actual_supplier=actual_supplier
                 )
@@ -104,6 +137,7 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
                 # id_mill=row['ID_Mill'],
                 # mill_name=row['Mill_Name'],
                 ownership_plot=row['Ownership'],
+                millideq=row['mill_eq_id'],
                 subsidiary=row['Subsidiary'],
                 estate=row['Estate'],
                 id_estate=row['ID_Estate'],
@@ -115,10 +149,12 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
                 province=row['Province'],
                 country=row['Country'],
                 planted_area=row['Planted_Ar'],
-                year_update=row['YearUpdate'],
+                # year_update=row['YearUpdate'],
                 risk_assess=row['RiskAssess'],
                 ghg_luc=row['GHG_LUC'],
-                status_plot=row['Status'],
+                status_of_plot=row['Legal_Comp'],
+                def_free=row['Def_Free'],
+                compliance=row['Compliance'],
                 geom=geom,
                 actual_supplier=actual_supplier
 
@@ -126,6 +162,8 @@ def handleShapefileAgriplot(shapefile_obj, model, actual):
             pass
 
     return bound_dict
+
+    # return True
 
 
 def handleShapefilePlantedOutsideLandRegistration(shapefile_obj, model):
@@ -380,6 +418,12 @@ class PieChartViewSet(generics.CreateAPIView):
                 .order_by('facilities_country')
             )
 
+            total = Facility.objects.all().count()
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
+
             return Response(data)
 
         if section == "facility" and distinct == "type":
@@ -390,6 +434,12 @@ class PieChartViewSet(generics.CreateAPIView):
                 .annotate(count=Count('facilities_type'))
                 .order_by('facilities_type')
             )
+
+            total = Facility.objects.all().count()
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
@@ -402,6 +452,12 @@ class PieChartViewSet(generics.CreateAPIView):
                 .order_by('facilites_rspo')
             )
 
+            total = Facility.objects.all().count()
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
+
             return Response(data)
 
         if section == "refinery" and distinct == "country":
@@ -412,6 +468,12 @@ class PieChartViewSet(generics.CreateAPIView):
                 .annotate(count=Count('refinery_country'))
                 .order_by('refinery_country')
             )
+
+            total = Refinery.objects.all().count()
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
@@ -424,6 +486,12 @@ class PieChartViewSet(generics.CreateAPIView):
                 .order_by('refinery_type')
             )
 
+            total = Refinery.objects.all().count()
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
+
             return Response(data)
 
         if section == "refinery" and distinct == "rspo":
@@ -434,7 +502,11 @@ class PieChartViewSet(generics.CreateAPIView):
                 .annotate(count=Count('refinery_rspo'))
                 .order_by('refinery_rspo')
             )
-
+            total = Refinery.objects.all().count()
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
             return Response(data)
 
         if section == "mill" and distinct == "country":
@@ -445,6 +517,12 @@ class PieChartViewSet(generics.CreateAPIView):
                 .annotate(count=Count('mill_country'))
                 .order_by('mill_country')
             )
+
+            total = Mill.objects.all().count()
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
@@ -457,6 +535,12 @@ class PieChartViewSet(generics.CreateAPIView):
                 .order_by('mill_type')
             )
 
+            total = Mill.objects.all().count()
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
+
             return Response(data)
 
         if section == "mill" and distinct == "rspo":
@@ -467,6 +551,12 @@ class PieChartViewSet(generics.CreateAPIView):
                 .annotate(count=Count('mill_rspo'))
                 .order_by('mill_rspo')
             )
+
+            total = Mill.objects.all().count()
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
@@ -479,6 +569,12 @@ class PieChartViewSet(generics.CreateAPIView):
                 .order_by('mill_deforestation_risk')
             )
 
+            total = Mill.objects.all().count()
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
+
             return Response(data)
 
         if section == "mill" and distinct == "mill_legal_prf_risk":
@@ -489,6 +585,12 @@ class PieChartViewSet(generics.CreateAPIView):
                 .annotate(count=Count('mill_legal_prf_risk'))
                 .order_by('mill_legal_prf_risk')
             )
+
+            total = Mill.objects.all().count()
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
@@ -501,6 +603,12 @@ class PieChartViewSet(generics.CreateAPIView):
                 .order_by('mill_legal_landuse_risk')
             )
 
+            total = Mill.objects.all().count()
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
+
             return Response(data)
 
         if section == "mill" and distinct == "mill_complex_supplybase_risk":
@@ -512,38 +620,249 @@ class PieChartViewSet(generics.CreateAPIView):
                 .order_by('mill_complex_supplybase_risk')
             )
 
+            total = Mill.objects.all().count()
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
+
             return Response(data)
 
         if section == "agriplot" and distinct == "country":
             from django.db.models import Count, F
             # Get distinct counts
             data = (
-                Agriplot.objects.values(display=F('country'))
+                TestAgriplot.objects.values(display=F('country'))
                 .annotate(count=Count('country'))
                 .order_by('country')
             )
+
+            total = TestAgriplot.objects.all().count()
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
         if section == "agriplot" and distinct == "type_of_supplier":
             from django.db.models import Count, F
             # Get distinct counts
-            data = (
-                Agriplot.objects.values(display=F('type_of_supplier'))
-                .annotate(count=Count('type_of_supplier'))
-                .order_by('type_of_supplier')
-            )
+            plantation = self.request.query_params.get('plantation', None)
+            status = self.request.query_params.get('status', None)
+            mill_eq_id = self.request.query_params.get('mill_eq_id', None)
+            radius = self.request.query_params.get('radius', None)
 
-            return Response(data)
+            if plantation == "actual":
+                data = (
+                    TestAgriplot.objects.filter(mill_eq_id=mill_eq_id, legal_comp__iexact=status).values(
+                        display=F('typeofsupp'))
+                    .annotate(count=Count('typeofsupp'))
+                    .order_by('typeofsupp')
+                )
+                total = TestAgriplot.objects.filter(
+                    mill_eq_id=mill_eq_id, legal_comp__iexact=status).count()
+                opacity = 1
+                for item in data:
+                    item['total'] = total
+                    item['area'] = np.random.randint(10)
+                    item['opacity'] = opacity
+                    item['percentage'] = (item.get('count') / total)*100
+                    opacity = opacity-0.15
+
+                if len(data) is 0:
+                    data = [{"display": "Nodata", "count": 100,
+                            "total": 0, "percentage": 100, opacity: 1}]
+                return Response(data)
+            else:
+                # geom = GEOSGeometry(geometry_wkt)
+                point = Mill.objects.get(mill_eq_id=mill_eq_id)
+                data = (
+                    TestAgriplot.objects.filter(legal_comp__iexact=status, geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+                                                                                                ), radius)).values(
+                        display=F('typeofsupp'))
+                    .annotate(count=Count('typeofsupp'))
+                    .order_by('typeofsupp')
+                )
+                total = TestAgriplot.objects.filter(legal_comp__iexact=status, geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+                                                                                                    ), radius)).count()
+                opacity = 1
+                for item in data:
+                    item['total'] = total
+                    item['opacity'] = opacity
+                    item['area'] = np.random.randint(10)
+                    item['percentage'] = (item.get('count') / total)*100
+                    opacity = opacity-0.15
+
+                return Response(data)
+
+        if section == "agriplot" and distinct == "def_free":
+            from django.db.models import Count, F
+            # Get distinct counts
+            plantation = self.request.query_params.get('plantation', None)
+            status = self.request.query_params.get('status', None)
+            mill_eq_id = self.request.query_params.get('mill_eq_id', None)
+            radius = self.request.query_params.get('radius', None)
+
+            if plantation == "actual":
+                data = (
+                    TestAgriplot.objects.filter(mill_eq_id=mill_eq_id, legal_comp__iexact=status).values(
+                        display=F('def_free'))
+                    .annotate(count=Count('def_free'))
+                    .order_by('def_free')
+                )
+                total = TestAgriplot.objects.filter(
+                    mill_eq_id=mill_eq_id, legal_comp__iexact=status).count()
+                opacity = 1
+                for item in data:
+                    item['total'] = total
+                    item['area'] = np.random.randint(10)
+                    item['opacity'] = opacity
+                    item['percentage'] = (item.get('count') / total)*100
+                    opacity = opacity-0.15
+
+                if len(data) is 0:
+                    data = [{"display": "Nodata", "count": 100,
+                            "total": 0, "percentage": 100, opacity: 1}]
+                return Response(data)
+            else:
+                # geom = GEOSGeometry(geometry_wkt)
+                point = Mill.objects.get(mill_eq_id=mill_eq_id)
+                data = (
+                    TestAgriplot.objects.filter(legal_comp__iexact=status, geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+                                                                                                ), radius)).values(
+                        display=F('def_free'))
+                    .annotate(count=Count('def_free'))
+                    .order_by('def_free')
+                )
+                total = TestAgriplot.objects.filter(legal_comp__iexact=status, geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+                                                                                                    ), radius)).count()
+                opacity = 1
+                for item in data:
+                    item['total'] = total
+                    item['opacity'] = opacity
+                    item['area'] = np.random.randint(10)
+                    item['percentage'] = (item.get('count') / total)*100
+                    opacity = opacity-0.15
+
+                return Response(data)
+
+        if section == "agriplot" and distinct == "compliance":
+            from django.db.models import Count, F
+            # Get distinct counts
+            plantation = self.request.query_params.get('plantation', None)
+            status = self.request.query_params.get('status', None)
+            mill_eq_id = self.request.query_params.get('mill_eq_id', None)
+            radius = self.request.query_params.get('radius', None)
+
+            if plantation == "actual":
+                data = (
+                    TestAgriplot.objects.filter(mill_eq_id=mill_eq_id, legal_comp__iexact=status).values(
+                        display=F('compliance'))
+                    .annotate(count=Count('compliance'))
+                    .order_by('compliance')
+                )
+                total = TestAgriplot.objects.filter(
+                    mill_eq_id=mill_eq_id, legal_comp__iexact=status).count()
+                opacity = 1
+                for item in data:
+                    item['total'] = total
+                    item['area'] = np.random.randint(10)
+                    item['opacity'] = opacity
+                    item['percentage'] = (item.get('count') / total)*100
+                    opacity = opacity-0.15
+
+                if len(data) is 0:
+                    data = [{"display": "Nodata", "count": 100,
+                            "total": 0, "percentage": 100, opacity: 1}]
+                return Response(data)
+            else:
+                # geom = GEOSGeometry(geometry_wkt)
+                point = Mill.objects.get(mill_eq_id=mill_eq_id)
+                data = (
+                    TestAgriplot.objects.filter(legal_comp__iexact=status, geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+                                                                                                ), radius)).values(
+                        display=F('compliance'))
+                    .annotate(count=Count('compliance'))
+                    .order_by('compliance')
+                )
+                total = TestAgriplot.objects.filter(legal_comp__iexact=status, geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+                                                                                                    ), radius)).count()
+                opacity = 1
+                for item in data:
+                    item['total'] = total
+                    item['opacity'] = opacity
+                    item['area'] = np.random.randint(10)
+                    item['percentage'] = (item.get('count') / total)*100
+                    opacity = opacity-0.15
+
+                return Response(data)
+
+        if section == "agriplot" and distinct == "status_of_plot":
+            from django.db.models import Count, F
+            # Get distinct counts
+            plantation = self.request.query_params.get('plantation', None)
+            status = self.request.query_params.get('status', None)
+            mill_eq_id = self.request.query_params.get('mill_eq_id', None)
+            radius = self.request.query_params.get('radius', None)
+
+            if plantation == "actual":
+                data = (
+                    TestAgriplot.objects.filter(mill_eq_id=mill_eq_id, legal_comp__iexact=status).values(
+                        display=F('legal_comp'))
+                    .annotate(count=Count('legal_comp'))
+                    .order_by('legal_comp')
+                )
+                total = TestAgriplot.objects.filter(
+                    mill_eq_id=mill_eq_id, legal_comp__iexact=status).count()
+                opacity = 1
+                for item in data:
+                    item['total'] = total
+                    item['area'] = np.random.randint(10)
+                    item['opacity'] = opacity
+                    item['percentage'] = (item.get('count') / total)*100
+                    opacity = opacity-0.15
+
+                if len(data) is 0:
+                    data = [{"display": "Nodata", "count": 100,
+                            "total": 0, "percentage": 100, opacity: 1}]
+                return Response(data)
+            else:
+                # geom = GEOSGeometry(geometry_wkt)
+                point = Mill.objects.get(mill_eq_id=mill_eq_id)
+                data = (
+                    TestAgriplot.objects.filter(legal_comp__iexact=status, geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+                                                                                                ), radius)).values(
+                        display=F('legal_comp'))
+                    .annotate(count=Count('legal_comp'))
+                    .order_by('legal_comp')
+                )
+                total = TestAgriplot.objects.filter(legal_comp__iexact=status, geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+                                                                                                    ), radius)).count()
+                opacity = 1
+                for item in data:
+                    item['total'] = total
+                    item['opacity'] = opacity
+                    item['area'] = np.random.randint(10)
+                    item['percentage'] = (item.get('count') / total)*100
+                    opacity = opacity-0.15
+
+                return Response(data)
 
         if section == "agriplot" and distinct == "risk_assess":
             from django.db.models import Count, F
             # Get distinct counts
             data = (
-                Agriplot.objects.values(display=F('risk_assess'))
-                .annotate(count=Count('risk_assess'))
-                .order_by('risk_assess')
+                TestAgriplot.objects.values(display=F('riskassess'))
+                .annotate(count=Count('riskassess'))
+                .order_by('riskassess')
             )
+
+            total = TestAgriplot.objects.all().count()
+            for item in data:
+                print(item, 'item')
+                item['total'] = total
+                item['percentage'] = (item.get('count') / total)*100
 
             return Response(data)
 
@@ -588,11 +907,12 @@ class TTPViewSet(viewsets.ModelViewSet):
 class AgriplotResultViewSet(APIView):
     def get(self, request, *args, **kwargs):
         import json
-        estate_ids = request.GET.get('estateids')
-        agriplots = Agriplot.objects.filter(
-            id_estate__in=json.loads(estate_ids)
+        status = self.request.query_params.get('status', None)
+        mill_eq_id = self.request.query_params.get('mill_eq_id', None)
+        agriplots = TestAgriplot.objects.filter(
+            legal_comp=status, mill_eq_id=mill_eq_id
         )
-        serializer = AgriplotSerializer(agriplots, many=True)
+        serializer = TestAgriplotSerializer(agriplots, many=True)
 
         return Response(serializer.data)
 
@@ -605,19 +925,26 @@ class TableColumnViewSet(APIView):
                 data = [
                     {
                         "field": "mill_eq_id",
-                        "headerName": "mill_eq_id",
+                        "headerName": "Mill Eq Id",
                         "width": width,
                         "type": "string",
                         "editable": False,
 
                     },
+                    {
+                        "field": "mill_name",
+                        "headerName": "Mill Name",
+                        "width": width,
+                        "type": "string",
+                        "editable": False,
 
+                    },
                     {
                         "field": "mill_company_name",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_company_name",
+                        "headerName": "Mill Company Name",
                     },
 
                     {
@@ -625,140 +952,140 @@ class TableColumnViewSet(APIView):
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_company_group_id",
+                        "headerName": "Mill Company Group Id",
                     },
                     {
                         "field": "mill_company_group",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_company_group",
+                        "headerName": "Mill Company Group",
                     },
                     {
                         "field": "mill_country",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_country",
+                        "headerName": "Mill Country",
                     },
                     {
                         "field": "mill_province",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_province",
+                        "headerName": "Mill Province",
                     },
                     {
                         "field": "mill_district",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_district",
+                        "headerName": "Mill District",
                     },
                     {
                         "field": "mill_address",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_address",
+                        "headerName": "Mill Address",
                     },
                     {
                         "field": "mill_type",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_type",
+                        "headerName": "Mill Type",
                     },
                     {
                         "field": "mill_lat",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_lat",
+                        "headerName": "Mill Lat",
                     },
                     {
                         "field": "mill_long",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_long",
+                        "headerName": "Mill Long",
                     },
                     {
                         "field": "mill_rspo",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_rspo",
+                        "headerName": "Mill Rspo",
                     },
                     {
                         "field": "mill_mspo",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_mspo",
+                        "headerName": "Mill Mspo",
                     },
                     {
                         "field": "mill_capacity",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_capacity",
+                        "headerName": "Mill Capacity",
                     },
                     {
                         "field": "mill_methane_capture",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_methane_capture",
+                        "headerName": "Mill Methane Capture",
                     },
                     {
                         "field": "mill_deforestation_risk",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_deforestation_risk",
+                        "headerName": "Mill Deforestation Risk",
                     },
                     {
                         "field": "mill_legal_prf_risk",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_legal_prf_risk",
+                        "headerName": "Mill Legal Prf Risk",
                     },
                     {
                         "field": "mill_legal_production_forest",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_legal_production_forest",
+                        "headerName": "Mill Legal Production Forest",
                     },
                     {
                         "field": "mill_legal_conservation_area",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_legal_conservation_area",
+                        "headerName": "Mill Legal Conservation Area",
                     },
                     {
                         "field": "mill_legal_landuse_risk",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_legal_landuse_risk",
+                        "headerName": "Mill Legal Landuse Risk",
                     },
                     {
                         "field": "mill_complex_supplybase_risk",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_complex_supplybase_risk",
+                        "headerName": "Mill Complex Supplybase Risk",
                     },
                     {
                         "field": "mill_date_update",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "mill_date_update",
+                        "headerName": "Mill Date Update",
                     },
                 ]
                 return Response({"columns": data})
@@ -775,7 +1102,7 @@ class TableColumnViewSet(APIView):
                     },
 
                     {
-                        "field": "ownership_plot",
+                        "field": "ownership",
                         "type": "string",
                         "width": width,
                         "editable": False,
@@ -804,14 +1131,14 @@ class TableColumnViewSet(APIView):
                         "headerName": "ID_Estate",
                     },
                     {
-                        "field": "agriplot_id",
+                        "field": "agriplotid",
                         "type": "string",
                         "width": width,
                         "editable": False,
                         "headerName": "AgriplotID",
                     },
                     {
-                        "field": "type_of_supplier",
+                        "field": "typeofsupp",
                         "type": "string",
                         "width": width,
                         "editable": False,
@@ -825,7 +1152,7 @@ class TableColumnViewSet(APIView):
                         "headerName": "Village",
                     },
                     {
-                        "field": "sub_district",
+                        "field": "subdistric",
                         "type": "string",
                         "width": width,
                         "editable": False,
@@ -853,21 +1180,21 @@ class TableColumnViewSet(APIView):
                         "headerName": "Country",
                     },
                     {
-                        "field": "planted_area",
+                        "field": "planted_ar",
                         "type": "string",
                         "width": width,
                         "editable": False,
                         "headerName": "Planted_Ar",
                     },
                     {
-                        "field": "year_update",
+                        "field": "yearupdate",
                         "type": "string",
                         "width": width,
                         "editable": False,
                         "headerName": "YearUpdate",
                     },
                     {
-                        "field": "risk_assess",
+                        "field": "riskassess",
                         "type": "string",
                         "width": width,
                         "editable": False,
@@ -881,11 +1208,39 @@ class TableColumnViewSet(APIView):
                         "headerName": "GHG_LUC",
                     },
                     {
-                        "field": "status_plot",
+                        "field": "luas",
                         "type": "string",
                         "width": width,
                         "editable": False,
-                        "headerName": "Status",
+                        "headerName": "Luas",
+                    },
+                    {
+                        "field": "mill_eq_id",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "mill_eq_id",
+                    },
+                    {
+                        "field": "def_free",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "Def_Free",
+                    },
+                    {
+                        "field": "compliance",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "Compliance",
+                    },
+                    {
+                        "field": "legal_comp",
+                        "type": "string",
+                        "width": width,
+                        "editable": False,
+                        "headerName": "Legal_Comp",
                     },
 
                 ]
@@ -895,16 +1250,104 @@ class TableColumnViewSet(APIView):
 
 class AgriplotResultWKTViewSet(APIView):
     def get(self, request, *args, **kwargs):
-        import json
-        estate_ids = request.GET.get('estateids')
-        geometry_wkt = request.GET.get('geometry_wkt')
-        agriplots = Agriplot.objects.filter(
-            id_estate__in=json.loads(estate_ids)
-        )
-        if geometry_wkt:
-            geom = GEOSGeometry(geometry_wkt)
-            agriplots = agriplots.filter(geom__intersects=geom)
+        status = self.request.query_params.get('status', None)
+        # geometry_wkt = self.request.query_params.get('geometry_wkt', None)
+        mill_eq_id = self.request.query_params.get('mill_eq_id', None)
+        radius = self.request.query_params.get('radius', None)
+        agriplots = TestAgriplot.objects.all()
+        point = Mill.objects.get(mill_eq_id=mill_eq_id)
+        if status:
+            agriplots = agriplots.filter(legal_comp=status)
+        if radius:
+            # geom = GEOSGeometry(geometry_wkt)
+            agriplots = agriplots.filter(geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+                                                              ), radius))
 
-        serializer = AgriplotSerializer(agriplots, many=True)
+        serializer = TestAgriplotSerializer(agriplots, many=True)
 
         return Response(serializer.data)
+
+
+# Geojson for the agriplot
+class AgriplotGeoJSONAPIView(generics.ListAPIView):
+    serializer_class = TestAgriplotGeojsonSerializer
+
+    def get_queryset(self):
+        status = self.request.query_params.get('status', None)
+        mill_eq_id = self.request.query_params.get('mill_eq_id', None)
+
+        queryset = TestAgriplot.objects.all()
+        if status:
+            queryset = queryset.filter(legal_comp=status)
+        if mill_eq_id:
+            queryset = queryset.filter(mill_eq_id=mill_eq_id)
+
+        return queryset
+
+# Geojson for the agriplot
+
+
+def distance_to_decimal_degrees(distance, latitude):
+    """
+    Source of formulae information:
+        1. https://en.wikipedia.org/wiki/Decimal_degrees
+        2. http://www.movable-type.co.uk/scripts/latlong.html
+    :param distance: an instance of `from django.contrib.gis.measure.Distance`
+    :param latitude: y - coordinate of a point/location
+    """
+    lat_radians = latitude * (math.pi / 180)
+    # 1 longitudinal degree at the equator equal 111,319.5m equiv to 111.32km
+    return distance.m / (111_319.5 * math.cos(lat_radians))
+
+
+class AgriplotGeoJSONAPIViewWKT(generics.ListAPIView):
+    serializer_class = TestAgriplotGeojsonSerializer
+
+    def get_queryset(self):
+        status = self.request.query_params.get('status', None)
+        geometry_wkt = self.request.query_params.get('geometry_wkt', None)
+        mill_eq_id = self.request.query_params.get('mill_eq_id', None)
+        radius = self.request.query_params.get('radius', None)
+
+        queryset = TestAgriplot.objects.all()
+        point = Mill.objects.get(mill_eq_id=mill_eq_id)
+        print(point.geom.coords, 'coords')
+        if status:
+            queryset = queryset.filter(legal_comp=status)
+        if radius:
+            # geom = GEOSGeometry(geometry_wkt)
+            queryset = queryset.filter(geom__dwithin=(Point(point.geom.coords[0], point.geom.coords[1]
+                                                            ), distance_to_decimal_degrees(D(m=int(50000)), point.geom.coords[1])))
+
+            # queryset = queryset.filter(geom__intersects=geom)
+        if mill_eq_id:
+            queryset = queryset.exclude(mill_eq_id=mill_eq_id)
+
+        return queryset
+
+    # def get(self, request, *args, **kwargs):
+    #     status = self.request.query_params.get('status', None)
+    #     geometry_wkt = self.request.query_params.get('geometry_wkt', None)
+    #     mill_eq_id = self.request.query_params.get('mill_eq_id', None)
+
+    #     point = Mill.objects.get(mill_eq_id=mill_eq_id)
+    #     gdf = gpd.read_file('Shapefiles/Finaltest_15012024.shp')
+    #     # Assuming you want to filter gdf based on queryset
+
+    #     #    status_of_plot=row['Legal_Comp'],
+    #     #             def_free=row['Def_Free'],
+    #     #             compliance=row['Compliance'],
+    #     # if status:
+    #     #     gdf = gdf[gdf['Legal_Comp'] == status]
+    #     #     print(gdf, 'gdf')
+    #     # if geometry_wkt:
+    #     #     # Assuming gdf has geometry column 'geometry'
+    #     #     geom = GEOSGeometry(geometry_wkt)
+    #     #     gdf = gdf[gdf['geometry'].apply(lambda x: geom.intersects(x))]
+    #     # if mill_eq_id:
+    #     #     gdf = gdf[~gdf['millideq'].isin([mill_eq_id])]
+
+    #     geojson_data = gdf.to_crs(epsg='4326').to_json()
+    #     geojson_dict = json.loads(geojson_data)
+
+    #     return Response(geojson_dict)
