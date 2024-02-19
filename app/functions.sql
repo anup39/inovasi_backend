@@ -108,3 +108,7 @@ COMMENT ON FUNCTION function_zxy_query_test_agriplot_by_radius_and_status IS 'Fi
 
 
 
+-- Create indexes
+DROP INDEX IF EXISTS idx_test_agriplot_geometry;
+CREATE INDEX idx_test_agriplot_legal_comp ON public.test_agriplot (legal_comp);
+CREATE INDEX idx_test_agriplot_geometry ON public.test_agriplot USING GIST (geometry);
